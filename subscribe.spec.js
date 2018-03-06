@@ -1,4 +1,4 @@
-const {subscribe, getMandate} = require('./subscribe');
+const {subscribe} = require('./subscribe');
 
 describe('subscribe functionality', function () {
 
