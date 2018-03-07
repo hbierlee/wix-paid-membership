@@ -2,6 +2,7 @@ import {fetch} from 'wix-fetch';
 import {ok, notFound, serverError} from 'wix-http-functions';
 
 import {createSubscription, getMandates, getPayment} from './mollie';
+import {updateSubscriber} from './database';
 
 
 const SITE_API_URL = 'https://bierleehenk.wixsite.com/henk-bierlee/_functions-dev'; // TODO change to production
@@ -19,7 +20,28 @@ export async function post_firstPayment(request) {
 
     if (mandate.status === 'valid') {
       const subscription = await createSubscription(payment.customerId);
+
+      const subscriptionId = subscription.id;
+
       console.log('s', subscription);
+      // createdDatetime: '2018-03-07T14:01:09.0Z' }
+    // s { resource: 'subscription',
+    //   id: 'sub_eaSnBtT6MN',
+    //   customerId: 'cst_hME9sMmRhz',
+    //   mode: 'test',
+    //   createdDatetime: '2018-03-07T14:01:15.0Z',
+    //   status: 'active',
+    //   amount: '0.01',
+    //   description: 'Monthly subscription payment',
+    //   method: null,
+    //   times: null,
+    //   interval: '1 month',
+    //   startDate: '2018-03-07',
+    //   cancelledDatetime: null,
+    //   links:
+    //   { webhookUrl: 'https://bierleehenk.wixsite.com/henk-bierlee/_functions-dev/recurringPayment' } }
+
+      // updateSubscriber(userId)
     }
     return ok({a: 'b'});
   }
