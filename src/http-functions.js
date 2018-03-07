@@ -9,21 +9,37 @@ const SITE_API_URL = 'https://bierleehenk.wixsite.com/henk-bierlee/_functions-de
 
 export const firstPaymentWebhookUrl = `${SITE_API_URL}/firstPayment`;
 
+const responseOptions = {
+  headers: {
+    'Content-Type': 'application/json'
+  },
+};
+
 export async function post_firstPayment(request) {
-  console.log('firstPayment webhook');
-  const payment = await getPayment(request.body.id);
-  const {customerId} = payment;
-  const [customer, mandates] = await Promise.all([await getCustomer(customerId), await getMandates(customerId)]);
-  const mandate = mandates.data[0];
+  try {
+    console.log('firstPayment webhook');
 
-  const {subscriberId} = JSON.parse(customer.metadata);
+    const body = await request.body.text(); // "id=xxxx"
+    const paymentId = body.slice(3);
 
-  if (mandate && mandate.status === 'valid' && payment.status === 'paid') {
-    const subscription = await createSubscription(customerId);
-    await grantSubscription(subscriberId, subscription.id);
-    return ok();
-  } else {
-    return badRequest(`the mandate status was ${mandate ? mandate.status : 'not defined'} and the payment status was ${payment.status}.`);
+    const payment = await getPayment(paymentId);
+    const {customerId} = payment;
+    const [customer, mandates] = await Promise.all([await getCustomer(customerId), await getMandates(customerId)]);
+    const mandate = mandates.data[0];
+
+    const {subscriberId} = JSON.parse(customer.metadata);
+
+    if (mandate && mandate.status === 'valid' && payment.status === 'paid') {
+      const subscription = await createSubscription(customerId);
+      await grantSubscription(subscriberId, subscription.id);
+      return ok(responseOptions);
+    } else {
+      responseOptions.body.error = `the mandate status was ${mandate ? mandate.status : 'not defined'} and the payment status was ${payment.status}, so subscription was not granted.`
+      return badRequest(responseOptions);
+    }
+  } catch (error) {
+    responseOptions.body = {error};
+    return serverError(responseOptions);
   }
 }
 
