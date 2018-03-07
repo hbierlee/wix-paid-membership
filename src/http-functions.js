@@ -1,9 +1,9 @@
-import {badRequest, ok, serverError} from 'wix-http-functions';
+import {ok, serverError} from 'wix-http-functions';
 
 import {createSubscription, getCustomer, getMandates, getPayment} from './mollie';
 import {grantSubscription} from './database';
 
-const SITE_API_URL = 'https://bierleehenk.wixsite.com/henk-bierlee/_functions-dev'; // TODO change to production
+const SITE_API_URL = 'https://bierleehenk.wixsite.com/henk-bierlee/_functions';
 
 export const firstPaymentWebhookUrl = `${SITE_API_URL}/firstPayment`;
 
@@ -54,6 +54,6 @@ export async function handleFirstPayment(request) {
     }
     await grantSubscription(subscriberId, subscription.id);
   } else {
-    throw `the mandate status was ${mandate ? mandate.status : 'not defined'} and the payment status was ${payment.status}, so subscription was not granted.`
+    throw `the mandate status was ${mandate ? mandate.status : 'not defined'} and the payment status was ${payment.status}, so subscription was not granted.`;
   }
 }
