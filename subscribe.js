@@ -1,5 +1,5 @@
 import {createFirstPayment, createMollieCustomer} from './mollie';
-import {addSubscriber, getSubscriber} from './subscribers';
+import {addSubscriber, getSubscriber} from './database';
 
 async function createSubscriber(userId, email) {
   const customer = await createMollieCustomer(userId, email);
