@@ -1,15 +1,14 @@
-import wixData from 'wix-data';
-
 import {createFirstPayment, createMollieCustomer} from './mollie';
+import {addSubscriber, getSubscriber} from './subscribers';
 
 async function createSubscriber(userId, email) {
   const customer = await createMollieCustomer(userId, email);
-  return await wixData.save('Subscribers', {title: userId, email, mollieCustomerId: customer.id, isSubscribed: false});
+  return await addSubscriber(userId, email, customer.id);
 }
 
 export async function subscribe(userId, email) {
-  const subscriberDataQuery = await wixData.query('Subscribers').eq('title', userId).find();
-  const subscriber = subscriberDataQuery.items[0] || await createSubscriber(userId, email);  // should only be one at all times..
+  const subscriber = await getSubscriber(userId) || await createSubscriber(userId, email);  // should only be one at all times..
+  // TODO maybe not make first payment when subscriber exists?
   const payment = await createFirstPayment(subscriber.mollieCustomerId);
   return payment.links.paymentUrl;
 }
