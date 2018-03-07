@@ -1,17 +1,22 @@
 import mock from 'mock-require';
+import {testSubscriber} from 'wix-data';
 
-mock('wix-http-functions', {
-  ok: function () {
-    console.log('wix-http-functions called');
-    return true;
-  },
-});
 
 import {post_payments} from './http-functions';
+import {createFirstPayment, createMollieCustomer} from './mollie';
 
 describe('webhook', function () {
 
+  let customer;
+  let payment;
+
+  beforeEach(async function() {
+    customer = await createMollieCustomer(testSubscriber.title, testSubscriber.email);
+    payment = await createFirstPayment(customer.id);
+  });
   it('should work', async function () {
-    return post_payments({body: {id: 'tr_d0b0E3EA3v'}});
+    console.log('c', customer);
+    console.log('p', payment);
+    return post_payments({body: {id: payment.id}});
   });
 });
