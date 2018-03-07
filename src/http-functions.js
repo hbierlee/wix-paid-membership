@@ -1,7 +1,9 @@
 import {fetch} from 'wix-fetch';
+import wixData from 'wix-data';
 import {ok, notFound, serverError} from 'wix-http-functions';
 
-import {createSubscription, getMandates, getPayment} from './mollie';
+import {createSubscription, getCustomer, getMandates, getPayment} from './mollie';
+import {getSubscriberByUserId, SUBSCRIBERS_COLLECTION_NAME, updateSubscriber} from './database';
 
 
 const SITE_API_URL = 'https://bierleehenk.wixsite.com/henk-bierlee/_functions-dev'; // TODO change to production
@@ -11,18 +13,29 @@ export const firstPaymentWebhookUrl = `${SITE_API_URL}/firstPayment`;
 export async function post_firstPayment(request) {
   console.log('firstPayment webhook');
   const payment = await getPayment(request.body.id);
+  const {customerId} = payment;
+  const customer = await getCustomer(customerId);
+  const {subscriberId} = JSON.parse(customer.metadata);
+  console.log('c', customer);
+  console.log('subscriberId', subscriberId);
 
   if (payment.status === 'paid') {
-    const mandates = await getMandates(payment.customerId);
+    const mandates = await getMandates(customerId);
     const mandate = mandates.data[0];
     console.log('m', mandate);
 
     if (mandate.status === 'valid') {
-      const subscription = await createSubscription(payment.customerId);
-
+      const subscription = await createSubscription(customerId);
       const subscriptionId = subscription.id;
 
-      console.log('s', subscription);
+      const subscriber = await wixData.get(SUBSCRIBERS_COLLECTION_NAME, subscriberId);
+      subscriber.isSubscribed = true;
+      subscriber.subscriptionId = subscriptionId;
+      subscriber.amountOfPayments = 1;
+      const update = await wixData.update(SUBSCRIBERS_COLLECTION_NAME, subscriber);
+      console.log('u', update);
+      return ok();
+
       // createdDatetime: '2018-03-07T14:01:09.0Z' }
     // s { resource: 'subscription',
     //   id: 'sub_eaSnBtT6MN',
@@ -42,7 +55,6 @@ export async function post_firstPayment(request) {
 
       // updateSubscriber(userId)
     }
-    return ok({a: 'b'});
   }
 }
 

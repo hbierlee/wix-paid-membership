@@ -5,11 +5,19 @@ import {fetch} from 'wix-fetch';
 import {MOLLIE_API_URL, MOLLIE_AUTH_HEADERS} from './constants';
 import {firstPaymentWebhookUrl, recurringPaymentWebhookUrl} from './http-functions';
 
-export async function createMollieCustomer(name, email) {
+export async function createMollieCustomer(name, email, subscriberId) {
   const customer = await fetch(`${MOLLIE_API_URL}/customers`, {
     method: 'POST',
     headers: MOLLIE_AUTH_HEADERS,
-    body: JSON.stringify({name, email}),
+    body: JSON.stringify({name, email, metadata: JSON.stringify({subscriberId})}),
+  });
+  return await customer.json();
+}
+
+export async function getCustomer(customerId) {
+  const customer = await fetch(`${MOLLIE_API_URL}/customers/${customerId}`, {
+    method: 'GET',
+    headers: MOLLIE_AUTH_HEADERS,
   });
   return await customer.json();
 }

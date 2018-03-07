@@ -4,16 +4,17 @@ import {testSubscriber} from 'wix-data';
 import {post_firstPayment, post_recurringPayment} from '../src/http-functions';
 import {createFirstPayment, createMollieCustomer} from '../src/mollie';
 
+
 describe('webhook', function () {
 
   let customer;
   let payment;
 
   beforeEach(async function () {
-    customer = await createMollieCustomer(testSubscriber.title, testSubscriber.email);
+    process.env.CUSTOMER_EXISTS = 'true';
+    customer = await createMollieCustomer(testSubscriber.title, testSubscriber.email, testSubscriber._id);
     payment = await createFirstPayment(customer.id);
     console.log('paymentId', payment.id);
-
   });
 
   it('should process a payment and (if succesfull) subscribe the customer', async function (done) {
