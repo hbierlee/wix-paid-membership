@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "test-webhook": "mocha ./http-functions.spec.js --compilers js:babel-core/register --require babel-polyfill --no-timeouts"
+    "test-webhook": "mocha ./test/http-functions.spec.js --compilers js:babel-core/register --require babel-polyfill --no-timeouts"
   },
   "author": "",
   "license": "ISC",
