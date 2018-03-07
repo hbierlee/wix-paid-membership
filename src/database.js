@@ -14,3 +14,11 @@ export async function addSubscriber(userId, email) {
 export async function updateSubscriber(subscriber) {
   return await wixData.update(SUBSCRIBERS_COLLECTION_NAME, subscriber);
 }
+
+export async function grantSubscription(subscriberId, mollieSubscriptionId) {
+  const subscriber = await wixData.get(SUBSCRIBERS_COLLECTION_NAME, subscriberId);
+  subscriber.isSubscribed = true;
+  subscriber.mollieSubscriptionId = mollieSubscriptionId;
+  subscriber.amountOfPayments = subscriber.amountOfPayments ? subscriber.amountOfPayments + 1 : 1;
+  return await wixData.update(SUBSCRIBERS_COLLECTION_NAME, subscriber);
+}
