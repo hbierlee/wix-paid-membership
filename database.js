@@ -7,8 +7,8 @@ export async function getSubscriber(userId) {
   return subscriberDataQuery.items[0];
 }
 
-export async function addSubscriber(userId, email, mollieCustomerId) {
-  return await wixData.insert(COLLECTION_NAME, {title: userId, email, mollieCustomerId, isSubscribed: false});
+export async function addSubscriber(userId, email) {
+  return await wixData.insert(COLLECTION_NAME, {title: userId, email, isSubscribed: false});
 }
 
 export async function updateSubscriber(userId, update) {
