@@ -10,8 +10,3 @@ export async function getSubscriber(userId) {
 export async function addSubscriber(userId, email) {
   return await wixData.insert(COLLECTION_NAME, {title: userId, email, isSubscribed: false});
 }
-
-export async function updateSubscriber(userId, update) {
-  const subscriber = await getSubscriber(userId);
-  return await wixData.update(COLLECTION_NAME, {...subscriber, ...update});
-}

@@ -2,7 +2,6 @@ import {fetch} from 'wix-fetch';
 import {ok, notFound, serverError} from 'wix-http-functions';
 
 import {createSubscription, getMandates, getPayment} from './mollie';
-import {updateSubscriber} from './database';
 
 
 const SITE_API_URL = 'https://bierleehenk.wixsite.com/henk-bierlee/_functions-dev'; // TODO change to production
