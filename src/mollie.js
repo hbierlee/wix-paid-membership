@@ -33,7 +33,7 @@ export async function createFirstPayment(customerId) {
       recurringType: 'first',
       description: 'first payment',
       redirectUrl: 'https://www.google.com',
-      webhookUrl: firstPaymentWebhookUrl,
+      webhookUrl: process.env.DISABLE_WEBHOOK === 'true' ? '' : firstPaymentWebhookUrl,
     }),
   });
   return await payment.json();
