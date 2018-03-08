@@ -11,26 +11,34 @@ const MOLLIE_AUTH_HEADERS = {
 };
 const SUBSCRIPTION_MONTHLY_AMOUNT = '0.01';
 
+async function mollieApiWrapper(fetch) {
+  const response = await fetch();
+  const json = await response.json();
+
+  if (json.error) {
+    throw new Error(`Error in mollie API call:\n${JSON.stringify(json.error, null, 2)}`);
+  } else {
+    return json;
+  }
+}
+
 export async function createMollieCustomer(name, email, subscriberId) {
-  const customer = await fetch(`${MOLLIE_API_URL}/customers`, {
+  return await mollieApiWrapper(() => fetch(`${MOLLIE_API_URL}/customers`, {
     method: 'POST',
     headers: MOLLIE_AUTH_HEADERS,
     body: JSON.stringify({name, email, metadata: JSON.stringify({subscriberId})}),
-  });
-  return await customer.json();
+  }));
 }
 
 export async function getCustomer(customerId) {
-  const customer = await fetch(`${MOLLIE_API_URL}/customers/${customerId}`, {
+  return await mollieApiWrapper(() => fetch(`${MOLLIE_API_URL}/customers/${customerId}`, {
     method: 'GET',
     headers: MOLLIE_AUTH_HEADERS,
-  });
-  return await customer.json();
+  }));
 }
 
 export async function createFirstPayment(customerId) {
-
-  const payment = await fetch(`${MOLLIE_API_URL}/payments`, {
+  return await mollieApiWrapper(() => fetch(`${MOLLIE_API_URL}/payments`, {
     method: 'POST',
     headers: MOLLIE_AUTH_HEADERS,
     body: JSON.stringify({
@@ -41,20 +49,18 @@ export async function createFirstPayment(customerId) {
       redirectUrl: 'https://bierleehenk.wixsite.com/henk-bierlee/blank-page-1',
       webhookUrl: firstPaymentWebhookUrl,
     }),
-  });
-  return await payment.json();
+  }));
 }
 
 export async function getMandates(customerId) {
-  const mandate = await fetch(`${MOLLIE_API_URL}/customers/${customerId}/mandates`, {
+  return await mollieApiWrapper(() => fetch(`${MOLLIE_API_URL}/customers/${customerId}/mandates`, {
     method: 'GET',
     headers: MOLLIE_AUTH_HEADERS,
-  });
-  return await mandate.json();
+  }));
 }
 
 export async function createSubscription(customerId) {
-  const subscription = await fetch(`${MOLLIE_API_URL}/customers/${customerId}/subscriptions`, {
+  return await mollieApiWrapper(() => fetch(`${MOLLIE_API_URL}/customers/${customerId}/subscriptions`, {
     method: 'POST',
     headers: MOLLIE_AUTH_HEADERS,
     body: JSON.stringify({
@@ -64,8 +70,7 @@ export async function createSubscription(customerId) {
       description: 'Monthly subscription payment',
       webhookUrl: recurringPaymentWebhookUrl,
     }),
-  });
-  return await subscription.json();
+  }));
 }
 
 export function getSubscriptionStartDate(now = new Date()) {
@@ -74,9 +79,8 @@ export function getSubscriptionStartDate(now = new Date()) {
 }
 
 export async function getPayment(paymentId) {
-  const payment = await fetch(`${MOLLIE_API_URL}/payments/${paymentId}`, {
+  return await mollieApiWrapper(() => fetch(`${MOLLIE_API_URL}/payments/${paymentId}`, {
     method: 'GET',
     headers: MOLLIE_AUTH_HEADERS,
-  });
-  return await payment.json();
+  }));
 }
