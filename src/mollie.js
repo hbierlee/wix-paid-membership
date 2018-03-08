@@ -1,9 +1,15 @@
-const SUBSCRIPTION_MONTHLY_AMOUNT = '0.01';
-
 import {fetch} from 'wix-fetch';
 
-import {MOLLIE_API_URL, MOLLIE_AUTH_HEADERS} from './constants';
 import {firstPaymentWebhookUrl, recurringPaymentWebhookUrl} from './http-functions';
+
+
+// settings and constants
+const MOLLIE_API_KEY = 'test_xDBcNmGEcf9dfHxjCw9TtbjPj554cb'; // TEST KEY
+const MOLLIE_API_URL = 'https://api.mollie.com/v1';
+const MOLLIE_AUTH_HEADERS = {
+  Authorization: `Bearer ${MOLLIE_API_KEY}`,
+};
+const SUBSCRIPTION_MONTHLY_AMOUNT = '0.01';
 
 export async function createMollieCustomer(name, email, subscriberId) {
   const customer = await fetch(`${MOLLIE_API_URL}/customers`, {
@@ -33,7 +39,7 @@ export async function createFirstPayment(customerId) {
       recurringType: 'first',
       description: 'first payment',
       redirectUrl: 'https://www.google.com',
-      webhookUrl: process.env.DISABLE_WEBHOOK === 'true' ? '' : firstPaymentWebhookUrl,
+      webhookUrl: firstPaymentWebhookUrl,
     }),
   });
   return await payment.json();
