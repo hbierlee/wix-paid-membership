@@ -16,9 +16,9 @@ export async function updateSubscriber(subscriber) {
 }
 
 export async function grantSubscription(subscriberId, mollieSubscriptionId) {
-  const subscriber = await wixData.get(SUBSCRIBERS_COLLECTION_NAME, subscriberId);
+  const subscriber = await wixData.get(SUBSCRIBERS_COLLECTION_NAME, subscriberId, {suppressAuth: true});  // this code will be called by mollie webhook which will have 'visitor' rights, so we need to bypass auth to read/write to this collection
   subscriber.isSubscribed = true;
   subscriber.mollieSubscriptionId = mollieSubscriptionId;
   subscriber.amountOfPayments = subscriber.amountOfPayments ? subscriber.amountOfPayments + 1 : 1;
-  return await wixData.update(SUBSCRIBERS_COLLECTION_NAME, subscriber);
+  return await wixData.update(SUBSCRIBERS_COLLECTION_NAME, subscriber, {suppressAuth: true});
 }
