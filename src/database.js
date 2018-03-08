@@ -3,7 +3,7 @@ import wixData from 'wix-data';
 export const SUBSCRIBERS_COLLECTION_NAME = 'Subscribers';
 
 export async function getSubscriberByUserId(userId) {
-  const subscriberDataQuery = await wixData.query(SUBSCRIBERS_COLLECTION_NAME).eq('title', userId).find();
+  const subscriberDataQuery = await wixData.query(SUBSCRIBERS_COLLECTION_NAME).eq('userId', userId).find();
   return subscriberDataQuery.items[0];
 }
 
