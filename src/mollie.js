@@ -53,12 +53,18 @@ export async function createSubscription(customerId) {
     headers: MOLLIE_AUTH_HEADERS,
     body: JSON.stringify({
       amount: SUBSCRIPTION_MONTHLY_AMOUNT,
+      startDate: getSubscriptionStartDate(),
       interval: '1 month',
       description: 'Monthly subscription payment',
       webhookUrl: recurringPaymentWebhookUrl,
     }),
   });
   return await subscription.json();
+}
+
+export function getSubscriptionStartDate(now = new Date()) {
+  now.setMonth(now.getMonth() + 1);
+  return now.toISOString().slice(0, 10);
 }
 
 export async function getPayment(paymentId) {
