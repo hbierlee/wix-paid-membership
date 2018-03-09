@@ -1,5 +1,5 @@
 import chai from 'chai';
-import {getSubscriptionStartDate} from '../src/mollie';
+import {getSubscriptionStartDate} from '../backend/mollie';
 
 describe('mollie wrapper and util', function () {
 

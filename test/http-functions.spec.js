@@ -1,8 +1,8 @@
 import prompt from 'prompt';
 import {testSubscriber} from 'wix-data';
 
-import {handleFirstPayment, post_recurringPayment} from '../src/http-functions';
-import {createFirstPayment, createMollieCustomer} from '../src/mollie';
+import {handleFirstPayment, post_recurringPayment} from '../backend/http-functions';
+import {createFirstPayment, createMollieCustomer} from '../backend/mollie';
 
 
 describe('webhook', function () {

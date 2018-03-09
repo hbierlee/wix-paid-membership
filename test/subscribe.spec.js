@@ -1,4 +1,4 @@
-const {subscribe} = require('../src/subscribe');
+const {subscribe} = require('../backend/subscribe');
 
 describe('subscribe functionality', function () {
 

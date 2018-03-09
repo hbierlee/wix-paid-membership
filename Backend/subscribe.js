@@ -3,7 +3,11 @@ import {addSubscriber, getSubscriberByUserId, updateSubscriber} from './database
 
 async function createSubscriber(userId, email) {
   const subscriber = await addSubscriber(userId, email);
+  console.log('s', subscriber);
+
   const customer = await createMollieCustomer(userId, email, subscriber._id);
+
+  console.log('c', customer);
   subscriber.mollieCustomerId = customer.id;
   return await updateSubscriber(subscriber);
 }
@@ -18,4 +22,9 @@ export async function subscribe(userId, email) {
   // TODO maybe not make first payment when subscriber exists?
   const payment = await createFirstPayment(subscriber.mollieCustomerId);
   return payment.links.paymentUrl;
+}
+
+export async function userIsSubscribed(userId) {
+  const subscriber = await getSubscriberByUserId(userId);
+  return subscriber && subscriber.isSubscribed;
 }
