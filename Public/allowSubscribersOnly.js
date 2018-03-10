@@ -1,12 +1,10 @@
 import wixUsers from 'wix-users';
 import wixLocation from 'wix-location';
-import {userIsSubscribed} from 'backend/subscribe';
+import {userIsAllowedAccess} from 'backend/subscribe';
 
 export default async function allowSubscribersOnly(redirect = '/subscribe') {
-
-  const userId = wixUsers.currentUser.id;
-  const accessGranted = await userIsSubscribed(userId);
-  if (!accessGranted) {
+  const allowAccess = await userIsAllowedAccess(wixUsers.currentUser);
+  if (!allowAccess) {
     wixLocation.to(redirect);
   }
 }

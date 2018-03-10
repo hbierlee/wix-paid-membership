@@ -21,7 +21,25 @@ export async function subscribe(userId, email) {
   return payment.links.paymentUrl;
 }
 
-export async function userIsSubscribed(userId) {
+export async function userIsAllowedAccess({id, role}) {
+  try {
+    switch (role) {
+      case 'Admin':
+        return true;
+      case 'Member': {
+        return await isUserSubscribed(id);
+      }
+      case 'Visitor':
+      default:
+        return false;
+    }
+  } catch (e) {
+    console.error('error in userIsAllowedAccess', e);
+    return false;
+  }
+}
+
+async function isUserSubscribed(userId) {
   const subscriber = await getSubscriberByUserId(userId);
   return subscriber && subscriber.isSubscribed;
 }
