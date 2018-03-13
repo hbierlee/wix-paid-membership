@@ -1,8 +1,14 @@
-module.exports() = {
+module.exports = {
   ok() {
-    return 'ok';
+    return 'ok ' + arguments;
   },
   redirect() {
-    return 'redirect';
+    return 'redirect ' + arguments;
   },
+  sendStatus() {
+    return 'send status ' + arguments;
+  },
+  forbidden() {
+    return 'forbidden ' + arguments;
+  }
 };
