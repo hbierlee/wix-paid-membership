@@ -14,7 +14,7 @@ export async function subscribers_Router(request) {
 
     if (user.role === 'Admin') {
       return ok('Premium');
-    } else if (user.role === 'Member' && await userIsSubscribed(user.id)) {
+    } else if ((user.role === 'Member' || user.role === 'siteMember') && await userIsSubscribed(user.id)) { // role naming seems to be different ('siteMember') when routing for some reason
       return ok('Premium');
     } else {  // 'Visitor'
       return redirect(REDIRECT_URL); // TODO will this prompt login? probably when subscribers page is in member page (as it should be)
