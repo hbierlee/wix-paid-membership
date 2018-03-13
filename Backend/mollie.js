@@ -46,7 +46,7 @@ export async function createFirstPayment(customerId) {
       amount: SUBSCRIPTION_MONTHLY_AMOUNT,
       recurringType: 'first',
       description: 'first payment',
-      redirectUrl: 'https://bierleehenk.wixsite.com/henk-bierlee/blank-page-1',
+      redirectUrl: 'https://bierleehenk.wixsite.com/henk-bierlee/subscribers',
       webhookUrl: firstPaymentWebhookUrl,
     }),
   }));
