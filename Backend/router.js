@@ -1,4 +1,4 @@
-import {ok, redirect, forbidden} from 'wix-router';
+import {ok, redirect} from 'wix-router';
 import {getSubscriberByUserId} from './database';
 
 const REDIRECT_URL = 'https://bierleehenk.wixsite.com/henk-bierlee/subscribe';
@@ -12,11 +12,11 @@ export async function subscribers_Router(request) {
   try {
     const {user} = request;
 
-    if (user.role === 'Admin') {
+    if (user.role === 'Admin' || user.role === 'siteAdmin' || user.role === 'siteOwner') {
       return ok('Premium');
     } else if ((user.role === 'Member' || user.role === 'siteMember') && await userIsSubscribed(user.id)) { // role naming seems to be different ('siteMember') when routing for some reason
       return ok('Premium');
-    } else {  // 'Visitor'
+    } else {  // 'Visitor', 'anonymous'
       return redirect(REDIRECT_URL); // TODO will this prompt login? probably when subscribers page is in member page (as it should be)
     }
   } catch (e) {
