@@ -16,7 +16,7 @@ export async function subscribe(userId, email) {
   if (subscriber.isSubscribed) {
     throw new Error(`The user with userId ${userId} is already subscribed`);
   }
-  // TODO maybe not make first payment when subscriber exists?
+
   const payment = await createFirstPayment(subscriber.mollieCustomerId);
   return payment.links.paymentUrl;
 }

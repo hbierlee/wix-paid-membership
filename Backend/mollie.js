@@ -1,6 +1,6 @@
 import {fetch} from 'wix-fetch';
 
-import {MOLLIE_API_KEY, PREMIUM_PAGE_URL, SUBSCRIPTION_AMOUNT, SUBSCRIPTION_INTERVAL} from './config';
+import {MOLLIE_API_KEY, PREMIUM_PAGE_ROUTER_URL, SUBSCRIPTION_AMOUNT, SUBSCRIPTION_INTERVAL} from './config';
 import {SITE_API_URL} from './http-functions';
 
 const MOLLIE_API_URL = 'https://api.mollie.com/v1';
@@ -49,7 +49,7 @@ export async function createFirstPayment(customerId, disableWebhook) {
       amount: SUBSCRIPTION_AMOUNT,
       recurringType: 'first',
       description: 'first payment',
-      redirectUrl: PREMIUM_PAGE_URL,
+      redirectUrl: PREMIUM_PAGE_ROUTER_URL,
       webhookUrl: disableWebhook ? '' : `${SITE_API_URL}/firstPayment`,
     }),
   }));
