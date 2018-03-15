@@ -12,9 +12,8 @@ describe('webhook', function () {
 
   beforeEach(async function () {
     process.env.CUSTOMER_EXISTS = 'true';
-    process.env.DISABLE_WEBHOOK = 'true';
     customer = await createMollieCustomer(testSubscriber.title, testSubscriber.email, testSubscriber._id);
-    payment = await createFirstPayment(customer.id);
+    payment = await createFirstPayment(customer.id, true);
     console.log('paymentId', payment.id);
   });
 

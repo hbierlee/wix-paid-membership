@@ -1,15 +1,12 @@
 import {fetch} from 'wix-fetch';
 
-import {firstPaymentWebhookUrl, recurringPaymentWebhookUrl} from './http-functions';
+import {MOLLIE_API_KEY, PREMIUM_PAGE_URL, SUBSCRIPTION_AMOUNT, SUBSCRIPTION_INTERVAL} from './config';
+import {SITE_API_URL} from './http-functions';
 
-
-// settings and constants
-const MOLLIE_API_KEY = 'test_xDBcNmGEcf9dfHxjCw9TtbjPj554cb'; // TEST KEY
 const MOLLIE_API_URL = 'https://api.mollie.com/v1';
 const MOLLIE_AUTH_HEADERS = {
   Authorization: `Bearer ${MOLLIE_API_KEY}`,
 };
-const SUBSCRIPTION_MONTHLY_AMOUNT = '0.01';
 
 async function mollieApiWrapper(fetch) {
   const response = await fetch();
@@ -37,17 +34,23 @@ export async function getCustomer(customerId) {
   }));
 }
 
-export async function createFirstPayment(customerId) {
+/**
+ *
+ * @param customerId
+ * @param disableWebhook optionally disable this webhook for testing purposes
+ * @returns {Promise<void>}
+ */
+export async function createFirstPayment(customerId, disableWebhook) {
   return await mollieApiWrapper(() => fetch(`${MOLLIE_API_URL}/payments`, {
     method: 'POST',
     headers: MOLLIE_AUTH_HEADERS,
     body: JSON.stringify({
       customerId,
-      amount: SUBSCRIPTION_MONTHLY_AMOUNT,
+      amount: SUBSCRIPTION_AMOUNT,
       recurringType: 'first',
       description: 'first payment',
-      redirectUrl: 'https://bierleehenk.wixsite.com/henk-bierlee/subscribers',
-      webhookUrl: firstPaymentWebhookUrl,
+      redirectUrl: PREMIUM_PAGE_URL,
+      webhookUrl: disableWebhook ? '' : `${SITE_API_URL}/firstPayment`,
     }),
   }));
 }
@@ -64,11 +67,11 @@ export async function createSubscription(customerId) {
     method: 'POST',
     headers: MOLLIE_AUTH_HEADERS,
     body: JSON.stringify({
-      amount: SUBSCRIPTION_MONTHLY_AMOUNT,
+      amount: SUBSCRIPTION_AMOUNT,
       startDate: getSubscriptionStartDate(),
-      interval: '1 month',
+      interval: SUBSCRIPTION_INTERVAL,
       description: 'Monthly subscription payment',
-      webhookUrl: recurringPaymentWebhookUrl,
+      webhookUrl: `${SITE_API_URL}/recurringPayment`,
     }),
   }));
 }

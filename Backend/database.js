@@ -1,6 +1,6 @@
 import wixData from 'wix-data';
 
-export const SUBSCRIBERS_COLLECTION_NAME = 'Subscribers';
+import {SUBSCRIBERS_COLLECTION_NAME} from './config';
 
 export async function getSubscriberByUserId(userId) {
   const subscriberDataQuery = await wixData.query(SUBSCRIBERS_COLLECTION_NAME).eq('userId', userId).find();

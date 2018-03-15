@@ -2,10 +2,9 @@ import {ok, serverError} from 'wix-http-functions';
 
 import {createSubscription, getCustomer, getMandates, getPayment} from './mollie';
 import {grantSubscription} from './database';
+import {IS_PRODUCTION, SITE_URL} from './config';
 
-const SITE_API_URL = 'https://bierleehenk.wixsite.com/henk-bierlee/_functions';
-
-export const firstPaymentWebhookUrl = `${SITE_API_URL}/firstPayment`;
+export const SITE_API_URL = `${SITE_URL}/_functions`;
 
 const response = {
   headers: {
@@ -16,9 +15,11 @@ const response = {
   },
 };
 
-
+// helper function for adding debug logs
 function log() {
-  response.body.log.push(Object.values(arguments));
+  if (!IS_PRODUCTION) {
+    response.body.log.push(Object.values(arguments));
+  }
 }
 
 async function apiWrapper(request, handler) {
@@ -34,7 +35,6 @@ async function apiWrapper(request, handler) {
 export async function post_firstPayment(request) {
   return await apiWrapper(request, handleFirstPayment);
 }
-
 
 export async function handleFirstPayment(request) {
   const body = await request.body.text(); // "id=xxxx"
