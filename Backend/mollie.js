@@ -27,11 +27,11 @@ async function mollieApiWrapper(fetch) {
   }
 }
 
-export async function createMollieCustomer(name, email, subscriberId) {
+export async function createMollieCustomer(name, email, wixSubscriberId) {
   return await mollieApiWrapper(() => fetch(`${MOLLIE_API_URL}/customers`, {
     method: 'POST',
     headers: MOLLIE_AUTH_HEADERS,
-    body: JSON.stringify({name, email, metadata: JSON.stringify({subscriberId})}),
+    body: JSON.stringify({name, email, metadata: JSON.stringify({wixSubscriberId})}),
   }));
 }
 
