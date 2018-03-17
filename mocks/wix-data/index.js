@@ -2,7 +2,7 @@ module.exports = {
   testSubscriber: {
     _id: 'some-database-id',
     mollieCustomerId: 'some-mollie-customer-id',
-    title: 'some-user-id',
+    userId: 'some-user-id',
     email: 'some@email.com',
     isSubscribed: false,
   },
