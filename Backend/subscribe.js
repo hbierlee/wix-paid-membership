@@ -1,4 +1,4 @@
-import {createPayment, createMollieCustomer} from './mollie';
+import {createMollieCustomer, createPayment} from './mollie';
 import {addSubscriber, getSubscriberByUserId, updateSubscriber} from './database';
 
 async function createSubscriber(userId, email) {

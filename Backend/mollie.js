@@ -9,7 +9,6 @@ import {
   SUBSCRIPTION_AMOUNT,
   SUBSCRIPTION_INTERVAL,
 } from './config';
-import {SITE_API_URL} from './http-functions';
 
 const MOLLIE_API_URL = 'https://api.mollie.com/v1';
 const MOLLIE_AUTH_HEADERS = {
