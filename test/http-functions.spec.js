@@ -1,8 +1,12 @@
+import chai from 'chai';
+
 import prompt from 'prompt';
 import {testSubscriber} from 'wix-data';
 
 import {handleFirstPayment, post_recurringPayment} from '../backend/http-functions';
 import {createFirstPayment, createMollieCustomer} from '../backend/mollie';
+
+chai.use(require('chai-as-promised'));
 
 async function waitOnUserInput() {
   return await new Promise((resolve, reject) => {
@@ -34,14 +38,7 @@ describe('webhook', function () {
   });
 
   it('should process a payment and (if successful) subscribe the customer', function (done) {
-    handleFirstPayment({body: {text: () => `id=${payment.id}`}})
-      .then(() => {
-        done()
-      })
-      .catch(e => {
-        console.log('e', e);
-        done(new Error(e));
-      });
+    chai.expect(handleFirstPayment({body: {text: () => `id=${payment.id}`}})).to.be.fulfilled;
   });
 
   xit('should process a failed recurring payment and unsubscribe the customer', async function () {
