@@ -1,24 +1,31 @@
 import chai from 'chai';
-import {testSubscriber} from 'wix-data';
+import {db, testSubscriber, insert} from 'wix-data';
+
+import {subscribe} from '../backend/subscribe';
 
 chai.use(require('chai-as-promised'));
 
-
-const {subscribe} = require('../backend/subscribe');
-
 describe('subscribe functionality', function () {
 
+  const userId = 'someMemberUserId';
+  const email = 'someMemberEmail@email.com';
+
   it('should create a subscriber in the database and return a payment', async function () {
-    process.env.CUSTOMER_EXISTS = 'false';
-    const result = await subscribe('henk', 'bierlee.henk@gmail.com');
+    const result = await subscribe(userId, email);
+
     chai.expect(result).to.exist;
-    chai.expect(result.error).to.equal(undefined);
-    chai.expect(process.env.CUSTOMER_EXISTS).to.equal('true');
+    chai.expect(result.paymentUrl).to.exist;
+    chai.expect(result.paymentId).to.exist;
+    chai.expect(result.error).to.not.exist;
+
+    const actualUser = db[0];
+    chai.expect(actualUser.userId).to.equal(userId);
+    chai.expect(!actualUser.isSubscribed);
   });
 
-  it('should throw an error if the subscriber already has a subscription', function () {
-    process.env.CUSTOMER_EXISTS = 'true';
-    testSubscriber.isSubscribed = true;
-    return chai.expect(subscribe(testSubscriber.userId, testSubscriber.email)).to.be.rejectedWith('The user with userId some-user-id is already subscribed');
+  it('should throw an error if the subscriber already has a subscription', async function () {
+    await subscribe(userId, email);
+    db[0].isSubscribed = true;
+    return chai.expect(subscribe(userId, email)).to.be.rejectedWith(`The user with userId ${userId} is already subscribed`);
   });
 });

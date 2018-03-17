@@ -18,11 +18,19 @@ const MOLLIE_TEST_API_KEY = 'test_xDBcNmGEcf9dfHxjCw9TtbjPj554cb';
 const MOLLIE_LIVE_API_KEY = '..';  // TODO
 export const MOLLIE_API_KEY = IS_PRODUCTION ? MOLLIE_LIVE_API_KEY : MOLLIE_TEST_API_KEY;
 
-// subscription settings
-export const SUBSCRIPTION_AMOUNT = '0.01';  // subscription cost per interval
+// payment/subscription settings
+export const PAYMENT_DESCRIPTION = 'Your monthly subscription fee of €0.01';
+export const SUBSCRIPTION_AMOUNT = '0.01';  // subscription cost per interval // TODO [mollie] auto-subtract mollie transaction fee here? Or instruct the user how to do this?
 export const SUBSCRIPTION_INTERVAL = '1 month';  // (`… months`, `… weeks`, `… days`) Interval to wait between charges like 1 month(s) or 14 days.
 
 // page URLs
 export const PREMIUM_PAGE_ROUTER_URL = `${SITE_URL}/premium`;  // the premium router prefix; if you change 'premium' to some other URL prefix, change the function names of `premium_Router` and `premium_SiteMap` accordingly!
 export const PREMIUM_PAGE_NAME = 'PremiumContentPage';  // the name of the page that will be shown if subscription is successful
 export const SUBSCRIBE_PAGE_URL = `${SITE_URL}/subscribe`;  // the URL of the page where users can subscribe
+
+// redirect URLs and API enpoints
+const SITE_API_URL = `${SITE_URL}/_functions`; // there is dev mode if you change this to _dev-functions, but note that wix-data then writes to the sandbox/test database!
+
+// You don't have to touch these, except if you want to change/disable them for unit testing purposes
+export const FIRST_PAYMENT_WEBHOOK = `${SITE_API_URL}/firstPayment`;
+export const RECURRING_PAYMENT_WEBHOOK = `${SITE_API_URL}/recurringPayment`;

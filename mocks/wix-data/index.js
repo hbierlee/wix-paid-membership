@@ -1,4 +1,5 @@
 module.exports = {
+  db: [],
   testSubscriber: {
     _id: 'some-database-id',
     mollieCustomerId: 'some-mollie-customer-id',
@@ -6,32 +7,31 @@ module.exports = {
     email: 'some@email.com',
     isSubscribed: false,
   },
-  get() {
+  get(_, _id) {
     console.log('get', arguments);
-    return module.exports.testSubscriber;
-  },
-  save(_, item) {
-    console.log('save', arguments);
-    process.env.CUSTOMER_EXISTS = true;
-    return item;
+    return module.exports.db.find(entry => entry._id === _id);
   },
   update(_, item) {
     console.log('update', arguments);
-    process.env.CUSTOMER_EXISTS = true;
+    const index = module.exports.db.findIndex(entry => entry._id === item._id);
+    if (~index) { // cool way to check if index !== -1, which means the item is included in the db
+      module.exports.db[index] = item;
+    }
     return item;
   },
   insert(_, item) {
     console.log('insert', arguments);
-    process.env.CUSTOMER_EXISTS = true;
+    item._id = `id-${module.exports.db.length}`;
+    module.exports.db.push(item);
     return item;
   },
   query() {
     console.log('query', arguments);
     return {
-      eq() {
+      eq(_, userId) {
         return {
           find() {
-            return {items: process.env.CUSTOMER_EXISTS === 'true' ? [module.exports.testSubscriber] : []};
+            return {items: module.exports.db.filter(entry => entry.userId === userId)};
           }
         }
       },

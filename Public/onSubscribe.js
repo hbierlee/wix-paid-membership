@@ -7,7 +7,7 @@ import {subscribe} from 'backend/subscribe';
 export default async function onSubscribe() {
   const user = await getUser();
   const userEmail = await user.getEmail();
-  const paymentUrl = await subscribe(user.id, userEmail);
+  const {paymentUrl} = await subscribe(user.id, userEmail);
   return wixLocation.to(paymentUrl);
 }
 

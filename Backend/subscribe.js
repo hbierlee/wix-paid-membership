@@ -1,9 +1,8 @@
-import {createFirstPayment, createMollieCustomer} from './mollie';
+import {createPayment, createMollieCustomer} from './mollie';
 import {addSubscriber, getSubscriberByUserId, updateSubscriber} from './database';
 
 async function createSubscriber(userId, email) {
-  const subscriber = await addSubscriber(userId, email);
-
+  const subscriber = await addSubscriber(userId);
   const customer = await createMollieCustomer(userId, email, subscriber._id);
 
   subscriber.mollieCustomerId = customer.id;
@@ -17,7 +16,6 @@ export async function subscribe(userId, email) {
     throw new Error(`The user with userId ${userId} is already subscribed`);
   }
 
-  const payment = await createFirstPayment(subscriber.mollieCustomerId);
-  return payment.links.paymentUrl;
+  const payment = await createPayment(subscriber.mollieCustomerId, 'first');
+  return {paymentUrl: payment.links.paymentUrl, paymentId: payment.id};
 }
-

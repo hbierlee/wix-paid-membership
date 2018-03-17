@@ -1,6 +1,14 @@
 import {fetch} from 'wix-fetch';
 
-import {MOLLIE_API_KEY, PREMIUM_PAGE_ROUTER_URL, SUBSCRIPTION_AMOUNT, SUBSCRIPTION_INTERVAL} from './config';
+import {
+  FIRST_PAYMENT_WEBHOOK,
+  MOLLIE_API_KEY,
+  PAYMENT_DESCRIPTION,
+  PREMIUM_PAGE_ROUTER_URL,
+  RECURRING_PAYMENT_WEBHOOK,
+  SUBSCRIPTION_AMOUNT,
+  SUBSCRIPTION_INTERVAL,
+} from './config';
 import {SITE_API_URL} from './http-functions';
 
 const MOLLIE_API_URL = 'https://api.mollie.com/v1';
@@ -37,21 +45,26 @@ export async function getCustomer(customerId) {
 /**
  *
  * @param customerId
- * @param disableWebhook optionally disable this webhook for testing purposes
+ * @param recurringType should be 'first' when creating first payments
  * @returns {Promise<void>}
  */
-export async function createFirstPayment(customerId, disableWebhook) {
+export async function createPayment(customerId, recurringType) {
+  const data = {
+    customerId,
+    amount: SUBSCRIPTION_AMOUNT,
+    description: PAYMENT_DESCRIPTION,  // TODO
+    redirectUrl: PREMIUM_PAGE_ROUTER_URL,
+    webhookUrl: FIRST_PAYMENT_WEBHOOK,
+  };
+
+  if (recurringType) {
+    data.recurringType = recurringType;
+  }
+
   return await mollieApiWrapper(() => fetch(`${MOLLIE_API_URL}/payments`, {
     method: 'POST',
     headers: MOLLIE_AUTH_HEADERS,
-    body: JSON.stringify({
-      customerId,
-      amount: SUBSCRIPTION_AMOUNT,
-      recurringType: 'first',
-      description: 'first payment',
-      redirectUrl: PREMIUM_PAGE_ROUTER_URL,
-      webhookUrl: disableWebhook ? '' : `${SITE_API_URL}/firstPayment`,
-    }),
+    body: JSON.stringify(data),
   }));
 }
 
@@ -70,8 +83,8 @@ export async function createSubscription(customerId) {
       amount: SUBSCRIPTION_AMOUNT,
       startDate: getSubscriptionStartDate(),
       interval: SUBSCRIPTION_INTERVAL,
-      description: 'Monthly subscription payment',
-      webhookUrl: `${SITE_API_URL}/recurringPayment`,
+      description: PAYMENT_DESCRIPTION,
+      webhookUrl: RECURRING_PAYMENT_WEBHOOK, // TODO probably no need to disable webhook to test this
     }),
   }));
 }
