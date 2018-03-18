@@ -4,8 +4,9 @@ import {
   FIRST_PAYMENT_WEBHOOK,
   MOLLIE_API_KEY,
   PAYMENT_DESCRIPTION,
-  PREMIUM_PAGE_ROUTER_URL,
+  PREMIUM_PAGE_ROUTER_PREFIX,
   RECURRING_PAYMENT_WEBHOOK,
+  SITE_URL,
   SUBSCRIPTION_AMOUNT,
   SUBSCRIPTION_INTERVAL,
 } from './config';
@@ -52,7 +53,7 @@ export async function createPayment(customerId, recurringType) {
     customerId,
     amount: SUBSCRIPTION_AMOUNT,
     description: PAYMENT_DESCRIPTION,  // TODO
-    redirectUrl: PREMIUM_PAGE_ROUTER_URL,
+    redirectUrl: `${SITE_URL}/${PREMIUM_PAGE_ROUTER_PREFIX}`,
     webhookUrl: FIRST_PAYMENT_WEBHOOK,
   };
 

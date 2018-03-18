@@ -10,5 +10,11 @@ module.exports = {
   },
   forbidden() {
     return 'forbidden ' + arguments;
+  },
+  WixRouterSitemapEntry: class {
+    
+    constructor(key) {
+      this.key = key;
+    }
   }
 };
