@@ -11,13 +11,22 @@ import {
   SUBSCRIPTION_INTERVAL,
 } from './config';
 
-const MOLLIE_API_URL = 'https://api.mollie.com/v1';
-const MOLLIE_AUTH_HEADERS = {
-  Authorization: `Bearer ${MOLLIE_API_KEY}`,
-};
+/**
+ *
+ * @param path endpoint path + query parameters
+ * @param method
+ * @param [data] body data fields in case of POST request
+ * @returns {Promise<*>}
+ */
+async function mollieApiWrapper(path, method, data) {
+  const response = await fetch(`https://api.mollie.com/v1/${path}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${MOLLIE_API_KEY}`,
+    },
+    body: JSON.stringify(data),
+  });
 
-async function mollieApiWrapper(fetch) {
-  const response = await fetch();
   const json = await response.json();
 
   if (json.error) {
@@ -28,18 +37,11 @@ async function mollieApiWrapper(fetch) {
 }
 
 export async function createMollieCustomer(name, email, wixSubscriberId) {
-  return await mollieApiWrapper(() => fetch(`${MOLLIE_API_URL}/customers`, {
-    method: 'POST',
-    headers: MOLLIE_AUTH_HEADERS,
-    body: JSON.stringify({name, email, metadata: JSON.stringify({wixSubscriberId})}),
-  }));
+  return await mollieApiWrapper('customers', 'POST', {name, email, metadata: JSON.stringify({wixSubscriberId})});
 }
 
 export async function getCustomer(customerId) {
-  return await mollieApiWrapper(() => fetch(`${MOLLIE_API_URL}/customers/${customerId}`, {
-    method: 'GET',
-    headers: MOLLIE_AUTH_HEADERS,
-  }));
+  return await mollieApiWrapper(`customers/${customerId}`, 'GET');
 }
 
 /**
@@ -62,42 +64,29 @@ export async function createPayment(customerId, recurringType = 'first', webhook
     data.recurringType = recurringType;
   }
 
-  return await mollieApiWrapper(() => fetch(`${MOLLIE_API_URL}/payments`, {
-    method: 'POST',
-    headers: MOLLIE_AUTH_HEADERS,
-    body: JSON.stringify(data),
-  }));
+  return await mollieApiWrapper(`payments`, 'POST', data);
 }
 
 export async function getMandates(customerId) {
-  return await mollieApiWrapper(() => fetch(`${MOLLIE_API_URL}/customers/${customerId}/mandates`, {
-    method: 'GET',
-    headers: MOLLIE_AUTH_HEADERS,
-  }));
+  return await mollieApiWrapper(`customers/${customerId}/mandates`, 'GET');
 }
 
 export async function createSubscription(customerId) {
-  return await mollieApiWrapper(() => fetch(`${MOLLIE_API_URL}/customers/${customerId}/subscriptions`, {
-    method: 'POST',
-    headers: MOLLIE_AUTH_HEADERS,
-    body: JSON.stringify({
-      amount: SUBSCRIPTION_AMOUNT,
-      startDate: getSubscriptionStartDate(),
-      interval: SUBSCRIPTION_INTERVAL,
-      description: PAYMENT_DESCRIPTION,
-      webhookUrl: RECURRING_PAYMENT_WEBHOOK, // TODO probably no need to disable webhook to test this
-    }),
-  }));
+  return await mollieApiWrapper(`customers/${customerId}/subscriptions`, 'POST', {
+    amount: SUBSCRIPTION_AMOUNT,
+    startDate: getSubscriptionStartDate(),
+    interval: SUBSCRIPTION_INTERVAL,
+    description: PAYMENT_DESCRIPTION,
+    webhookUrl: RECURRING_PAYMENT_WEBHOOK, // TODO probably no need to disable webhook to test this
+  });
 }
 
-export function getSubscriptionStartDate(now = new Date()) {
+// TODO [mollie] making this dynamic is pretty annoying, is there a better way?
+export function getSubscriptionStartDate(now = new Date(), interval) {
   now.setMonth(now.getMonth() + 1);
   return now.toISOString().slice(0, 10);
 }
 
 export async function getPayment(paymentId) {
-  return await mollieApiWrapper(() => fetch(`${MOLLIE_API_URL}/payments/${paymentId}`, {
-    method: 'GET',
-    headers: MOLLIE_AUTH_HEADERS,
-  }));
+  return await mollieApiWrapper(`payments/${paymentId}`, 'GET');
 }
