@@ -1,7 +1,7 @@
 import wixUsers from 'wix-users';
 import wixLocation from 'wix-location';
 
-import {subscribe} from 'Backend/subscribe';
+import {subscribe} from 'backend/subscribe';
 
 // TODO rendering optimization needed?? https://support.wix.com/en/article/how-to-create-member-profile-pages-with-wix-code
 export default async function onSubscribe() {
