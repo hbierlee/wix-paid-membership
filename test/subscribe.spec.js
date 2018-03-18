@@ -66,7 +66,7 @@ describe('subscriptions', function () {
     await expectSubscriptionStatusToEqual('none');
 
     console.log('accept the first payment by selecting status \'paid\' at the following URL: ' + resubscribeResult.paymentUrl);
-    await opn(firstSubscribeResult.paymentUrl);
+    await opn(resubscribeResult.paymentUrl);
     await waitForWebhookToSettle();
     await expectSubscriptionStatusToEqual('active');
     chai.expect(db[0].mollieSubscriptionId).to.be.an('string');
