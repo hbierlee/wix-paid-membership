@@ -45,5 +45,7 @@ export async function getMollieSubscriptionByUserId(userId) {
 
 export async function unsubscribe(userId) {
   const subscription = await getMollieSubscriptionByUserId(userId);
-  await cancelMollieSubscription(subscription.customerId, subscription.id);
+  if (subscription) {
+    await cancelMollieSubscription(subscription.customerId, subscription.id);
+  }
 }
