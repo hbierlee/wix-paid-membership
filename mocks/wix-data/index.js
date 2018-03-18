@@ -11,6 +11,14 @@ module.exports = {
     console.log('get', arguments);
     return module.exports.db.find(entry => entry._id === _id);
   },
+  remove(_, _id) {
+    if (!_id) { // clear
+      module.exports.db.length = 0;
+    } else {
+      // TODO implement when necessary
+      console.error('!!! remove by id is not implemented in the wix-data mock');
+    }
+  },
   update(_, item) {
     console.log('update', arguments);
     const index = module.exports.db.findIndex(entry => entry._id === item._id);
