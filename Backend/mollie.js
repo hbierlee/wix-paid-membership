@@ -77,16 +77,26 @@ export async function createSubscription(customerId) {
     startDate: getSubscriptionStartDate(),
     interval: SUBSCRIPTION_INTERVAL,
     description: PAYMENT_DESCRIPTION,
-    webhookUrl: RECURRING_PAYMENT_WEBHOOK, // TODO probably no need to disable webhook to test this
+    webhookUrl: RECURRING_PAYMENT_WEBHOOK,
   });
+}
+
+
+export async function getMollieSubscriptions(customerId) {
+  return await mollieApiWrapper(`customers/${customerId}/subscriptions`, 'GET');
+}
+
+export async function getMollieSubscription(customerId, subscriptionId) {
+  return await mollieApiWrapper(`customers/${customerId}/subscriptions/${subscriptionId}`, 'GET');
+}
+
+
+export async function getPayment(paymentId) {
+  return await mollieApiWrapper(`payments/${paymentId}`, 'GET');
 }
 
 // TODO [mollie] making this dynamic is pretty annoying, is there a better way?
 export function getSubscriptionStartDate(now = new Date(), interval) {
   now.setMonth(now.getMonth() + 1);
   return now.toISOString().slice(0, 10);
-}
-
-export async function getPayment(paymentId) {
-  return await mollieApiWrapper(`payments/${paymentId}`, 'GET');
 }
