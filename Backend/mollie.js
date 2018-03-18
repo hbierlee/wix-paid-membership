@@ -43,7 +43,7 @@ export async function getMollieCustomer(customerId) {
   return await mollieApiWrapper(`customers/${customerId}`, 'GET');
 }
 
-export async function createFirstPayment(customerId) {
+export async function createFirstMolliePayment(customerId) {
   return await mollieApiWrapper('payments', 'POST', {
     customerId,
     amount: SUBSCRIPTION_AMOUNT,
@@ -54,7 +54,7 @@ export async function createFirstPayment(customerId) {
   });
 }
 
-export async function getMandates(customerId) {
+export async function getMollieMandates(customerId) {
   return await mollieApiWrapper(`customers/${customerId}/mandates`, 'GET');
 }
 
@@ -75,12 +75,12 @@ export async function cancelMollieSubscription(customerId, subscriptionId) {
   return await mollieApiWrapper(`customers/${customerId}/subscriptions/${subscriptionId}`, 'DELETE');
 }
 
-export async function getPayment(paymentId) {
+export async function getMolliePayment(paymentId) {
   return await mollieApiWrapper(`payments/${paymentId}`, 'GET');
 }
 
 // TODO [mollie] making this dynamic is pretty annoying, is there a better way?
-export function getSubscriptionStartDate(now = new Date(), interval) {
+export function getSubscriptionStartDate(now = new Date()) {
   now.setMonth(now.getMonth() + 1);
   return now.toISOString().slice(0, 10);
 }

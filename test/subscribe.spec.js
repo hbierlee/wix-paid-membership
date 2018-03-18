@@ -97,4 +97,3 @@ describe('subscriptions', function () {
     chai.expect(subscriptionStatus).to.equal(expectedStatus);
   }
 });
-

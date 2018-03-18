@@ -1,7 +1,7 @@
 import {ok, serverError} from 'wix-http-functions';
 
-import {createMollieSubscription, getMollieCustomer, getMandates, getPayment} from './mollie';
-import {cancelSubscription, setSubscription} from './database';
+import {createMollieSubscription, getMollieCustomer, getMollieMandates, getMolliePayment} from './mollie';
+import {setSubscription} from './database';
 import {IS_PRODUCTION} from './config';
 
 const response = {
@@ -46,10 +46,10 @@ async function parseRequestBody(request) {
 export async function handleFirstPayment(request) {
   const {paymentId} = await parseRequestBody(request);
 
-  const payment = await getPayment(paymentId);
+  const payment = await getMolliePayment(paymentId);
   const {customerId} = payment;
-  const [customer, mandates] = await Promise.all([await getMollieCustomer(customerId), await getMandates(customerId)]);
-  const mandate = mandates.data[0]; // TODO [mollie] should I check for more mandates?
+  const [customer, mandates] = await Promise.all([await getMollieCustomer(customerId), await getMollieMandates(customerId)]);
+  const mandate = mandates.data[0]; // TODO [mollie] how do you know which mandate will be used for which description?
 
   const {wixSubscriberId} = JSON.parse(customer.metadata);
 
