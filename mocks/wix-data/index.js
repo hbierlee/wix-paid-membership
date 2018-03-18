@@ -5,7 +5,6 @@ module.exports = {
     mollieCustomerId: 'some-mollie-customer-id',
     userId: 'some-user-id',
     email: 'some@email.com',
-    isSubscribed: false,
   },
   get(_, _id) {
     console.log('get', arguments);

@@ -1,8 +1,8 @@
-import {createMollieCustomer, createPayment, getCustomer, getMollieSubscriptions} from './mollie';
-import {addSubscriber, getSubscriberByUserId, updateSubscriber} from './database';
+import {cancelMollieSubscription, createFirstPayment, createMollieCustomer, getMollieSubscription,} from './mollie';
+import {createSubscriber, getSubscriberByUserId, updateSubscriber} from './database';
 
-async function createSubscriber(userId, email) {
-  const subscriber = await addSubscriber(userId);
+async function createSubscriberAndMollieCustomer(userId, email) {
+  const subscriber = await createSubscriber(userId);
   const customer = await createMollieCustomer(userId, email, subscriber._id); // TODO could improve this name to be firstName + lastName if present
 
   subscriber.mollieCustomerId = customer.id;
@@ -10,34 +10,35 @@ async function createSubscriber(userId, email) {
 }
 
 export async function subscribe(userId, email) {
-  const subscriber = await getSubscriberByUserId(userId) || await createSubscriber(userId, email);  // should only be one at all times..
+  const subscriber = await getSubscriberByUserId(userId) || await createSubscriberAndMollieCustomer(userId, email);
 
-  if (subscriber.isSubscribed) {
-    throw new Error(`The user with userId ${userId} is already subscribed`);
+  if (await getSubscriptionStatus(userId) === 'active') {
+    throw new Error(`The user with userId ${userId} is already subscribed.`);
+  } else {  // create first payment to create new subscription
+    const payment = await createFirstPayment(subscriber.mollieCustomerId, 'first');
+    return {paymentUrl: payment.links.paymentUrl, paymentId: payment.id, mollieCustomerId: subscriber.mollieCustomerId};
   }
-
-  const payment = await createPayment(subscriber.mollieCustomerId, 'first');
-  return {paymentUrl: payment.links.paymentUrl, paymentId: payment.id};
 }
 
 export async function getSubscriptionStatus(userId) {
+  const subscription = await getMollieSubscriptionByUserId(userId);
+  return subscription ? subscription.status : 'none';
+}
+
+export async function getMollieSubscriptionByUserId(userId) {
   const subscriber = await getSubscriberByUserId(userId);
-  const mollieSubscriptions = await getMollieSubscriptions(subscriber.mollieCustomerId);
-  const [subscription] = mollieSubscriptions.data;
-  console.log('m', mollieSubscriptions);
+  if (!subscriber || !subscriber.mollieSubscriptionId) {
+    return undefined;
+  }
 
-
-  return {
-    isSubscribed: subscriber.isSubscribed,
-    subscription,
-  };
+  try {
+    return await getMollieSubscription(subscriber.mollieCustomerId, subscriber.mollieSubscriptionId);
+  } catch (e) { // subscription is non-existent or cancelled
+    return undefined;
+  }
 }
 
 export async function unsubscribe(userId) {
-  const subscriber = await getSubscriberByUserId(userId);
-  const mollieSubscriptions = await getMollieSubscriptions(subscriber.mollieCustomerId);
-  const [subscription] = mollieSubscriptions.data;
-
-  // TODO ..
-
+  const subscription = await getMollieSubscriptionByUserId(userId);
+  await cancelMollieSubscription(subscription.customerId, subscription.id);
 }

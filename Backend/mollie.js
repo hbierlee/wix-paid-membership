@@ -5,7 +5,6 @@ import {
   MOLLIE_API_KEY,
   PAYMENT_DESCRIPTION,
   PREMIUM_PAGE_ROUTER_PREFIX,
-  RECURRING_PAYMENT_WEBHOOK,
   SITE_URL,
   SUBSCRIPTION_AMOUNT,
   SUBSCRIPTION_INTERVAL,
@@ -40,56 +39,41 @@ export async function createMollieCustomer(name, email, wixSubscriberId) {
   return await mollieApiWrapper('customers', 'POST', {name, email, metadata: JSON.stringify({wixSubscriberId})});
 }
 
-export async function getCustomer(customerId) {
+export async function getMollieCustomer(customerId) {
   return await mollieApiWrapper(`customers/${customerId}`, 'GET');
 }
 
-/**
- * Creates payment in mollie system. Defaults to a 'first' type payment for creating the subscription.
- * @param customerId
- * @param recurringType
- * @param webhookUrl
- * @returns {Promise<void>}
- */
-export async function createPayment(customerId, recurringType = 'first', webhookUrl = FIRST_PAYMENT_WEBHOOK) {
-  const data = {
+export async function createFirstPayment(customerId) {
+  return await mollieApiWrapper('payments', 'POST', {
     customerId,
     amount: SUBSCRIPTION_AMOUNT,
     description: PAYMENT_DESCRIPTION,
     redirectUrl: `${SITE_URL}/${PREMIUM_PAGE_ROUTER_PREFIX}`,
-    webhookUrl,
-  };
-
-  if (recurringType) {
-    data.recurringType = recurringType;
-  }
-
-  return await mollieApiWrapper(`payments`, 'POST', data);
+    recurringType: 'first',
+    webhookUrl: FIRST_PAYMENT_WEBHOOK,
+  });
 }
 
 export async function getMandates(customerId) {
   return await mollieApiWrapper(`customers/${customerId}/mandates`, 'GET');
 }
 
-export async function createSubscription(customerId) {
+export async function createMollieSubscription(customerId) {
   return await mollieApiWrapper(`customers/${customerId}/subscriptions`, 'POST', {
     amount: SUBSCRIPTION_AMOUNT,
     startDate: getSubscriptionStartDate(),
     interval: SUBSCRIPTION_INTERVAL,
     description: PAYMENT_DESCRIPTION,
-    webhookUrl: RECURRING_PAYMENT_WEBHOOK,
   });
-}
-
-
-export async function getMollieSubscriptions(customerId) {
-  return await mollieApiWrapper(`customers/${customerId}/subscriptions`, 'GET');
 }
 
 export async function getMollieSubscription(customerId, subscriptionId) {
   return await mollieApiWrapper(`customers/${customerId}/subscriptions/${subscriptionId}`, 'GET');
 }
 
+export async function cancelMollieSubscription(customerId, subscriptionId) {
+  return await mollieApiWrapper(`customers/${customerId}/subscriptions/${subscriptionId}`, 'DELETE');
+}
 
 export async function getPayment(paymentId) {
   return await mollieApiWrapper(`payments/${paymentId}`, 'GET');

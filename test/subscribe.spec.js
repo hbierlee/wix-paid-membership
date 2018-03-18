@@ -3,83 +3,98 @@ import {db} from 'wix-data';
 
 import opn from 'opn';
 import {createTunneledServer, waitForWebhookToSettle} from './tunneledServer';
-import {getSubscriptionStatus, subscribe} from '../Backend/subscribe';
-import {getCustomer} from '../Backend/mollie';
+import {getSubscriptionStatus, subscribe, unsubscribe} from '../Backend/subscribe';
+import {getMollieCustomer} from '../Backend/mollie';
 import {remove} from '../mocks/wix-data';
-
-chai.use(require('chai-as-promised'));
 
 describe('subscriptions', function () {
 
-  let userId = 'someMemberUserId';
-  let email = 'someMemberEmail@email.com';
-  let subscribeResult;
+  const userId = 'someMemberUserId';
+  const email = 'someMemberEmail@email.com';
 
   before(async function () {
-    console.log('a');
     await createTunneledServer();
-  });
-
-  beforeEach(async function () {
-    subscribeResult = await subscribe(userId, email);
   });
 
   afterEach(function () {
     remove(); // clear db
   });
 
-  describe('subscribe functionality', function () {
+  it('should create a subscriber in the database and a customer on the Mollie platform, and return a payment with paymentUrl and paymentId', async function () {
+    await expectSubscriptionStatusToEqual('none');
+    const firstSubscribeResult = await subscribe(userId, email);
+    await expectSubscriptionStatusToEqual('none');
 
-    beforeEach(async function () {
-      await opn(subscribeResult.paymentUrl);
-      await waitForWebhookToSettle();
-    });
+    //
+    chai.expect(db).to.be.lengthOf(1);
+    await checkSubscriberWithMollieCustomer(db[0], firstSubscribeResult);
+    chai.expect(db[0].mollieSubscriptionId).to.equal(undefined);
 
-    it('should create a subscriber in the database and a customer on the Mollie platform, and return a payment with paymentUrl and paymentId', async function () {
+    // should be able to re-subscribe at this point
+    const secondSubscribeResult = await subscribe(userId, email);
+    await expectSubscriptionStatusToEqual('none');
+    chai.expect(db).to.be.lengthOf(1);
+    checkSubscriberWithMollieCustomer(db[0], secondSubscribeResult);
+    chai.expect(secondSubscribeResult.mollieCustomerId).to.equal(firstSubscribeResult.mollieCustomerId);
 
-      // verify payment result
-      chai.expect(subscribeResult).to.exist;
-      chai.expect(subscribeResult.paymentUrl).to.exist;
-      chai.expect(subscribeResult.paymentId).to.exist;
-      chai.expect(subscribeResult.error).to.not.exist;
+    console.log('accept the first payment by selecting status \'paid\' at the following URL: ' + firstSubscribeResult.paymentUrl);
+    await opn(firstSubscribeResult.paymentUrl);
+    await waitForWebhookToSettle();
 
-      // verify db subscriber
-      const [subscriber] = db;
-      chai.expect(subscriber.userId).to.equal(userId);
-      chai.expect(!subscriber.isSubscribed);  // subscriber is not yet subscriber, because we haven't paid the payment yet
+    const firstSubscriptionId = db[0].mollieSubscriptionId;
+    chai.expect(firstSubscriptionId).to.be.an('string');
+    await expectSubscriptionStatusToEqual('active');
 
-      // verify mollie customer
-      const customer = await getCustomer(subscriber.mollieCustomerId);
-      chai.expect(customer.id).to.equal(subscriber.mollieCustomerId);
-      chai.expect(customer.name).to.equal(userId);
-      chai.expect(customer.email).to.equal(email);
-      chai.expect(JSON.parse(customer.metadata)).to.deep.equal({wixSubscriberId: 'id-0'});
-    });
+    // shouldn't be able to re-subscribe while having active subscription
+    try {
+      await subscribe(userId, email);
+      console.error('should have rejected re-subscribe promise');
+      chai.assert.fail();
+    } catch (e) {
+      chai.expect(e.message).to.equal(`The user with userId ${userId} is already subscribed.`);
+    }
 
-    it('should throw an error if the subscriber already has a subscription', async function () {
-      db[0].isSubscribed = true;
-      return chai.expect(subscribe(userId, email)).to.be.rejectedWith(`The user with userId ${userId} is already subscribed`);
-    });
+    await unsubscribe(userId);
+    await expectSubscriptionStatusToEqual('none');
+
+    // should be able to resubscribe
+    const resubscribeResult = await subscribe(userId, email);
+    chai.expect(db).to.be.lengthOf(1);
+    await checkSubscriberWithMollieCustomer(db[0], resubscribeResult);
+    chai.expect(db[0].mollieSubscriptionId).to.be.an('string');
+    chai.expect(db[0].mollieSubscriptionId).to.equal(firstSubscriptionId); // expect this to not be updated yet
+    await expectSubscriptionStatusToEqual('none');
+
+    console.log('accept the first payment by selecting status \'paid\' at the following URL: ' + resubscribeResult.paymentUrl);
+    await opn(firstSubscribeResult.paymentUrl);
+    await waitForWebhookToSettle();
+    await expectSubscriptionStatusToEqual('active');
+    chai.expect(db[0].mollieSubscriptionId).to.be.an('string');
+    chai.expect(db[0].mollieSubscriptionId).to.not.equal(firstSubscriptionId); // expect this to be updated
   });
 
-  describe('get subscription status functionality', function () {
+  async function checkSubscriberWithMollieCustomer(subscriber, subscribeResult) {
+    // verify payment result
+    chai.expect(subscribeResult).to.not.equal(undefined);
+    chai.expect(subscribeResult.paymentUrl).to.be.an('string');
+    chai.expect(subscribeResult.paymentId).to.be.an('string');
+    chai.expect(subscribeResult.error).to.equal(undefined);
 
-    it('should return subscription status', async function () {
-      const subscriptionStatusA = await getSubscriptionStatus(userId);
-      chai.expect(!!subscriptionStatusA.isSubscribed).to.equal(false);
-      chai.expect(subscriptionStatusA.subscription).to.equal(undefined);
+    // verify db subscriber (mollieSubscriptionId is verified outside this function)
+    chai.expect(subscriber.userId).to.equal(userId);
+    chai.expect(subscriber.mollieCustomerId).to.equal(subscribeResult.mollieCustomerId);
 
-      console.log('accept the first payment by selecting status \'paid\' at the following URL: ' + subscribeResult.paymentUrl);
-      await opn(subscribeResult.paymentUrl);
-      await waitForWebhookToSettle();
+    // verify mollie customer
+    const customer = await getMollieCustomer(subscriber.mollieCustomerId);
+    chai.expect(customer.id).to.equal(subscriber.mollieCustomerId);
+    chai.expect(customer.name).to.equal(subscriber.userId);
+    chai.expect(customer.email).to.equal(email);
+    chai.expect(JSON.parse(customer.metadata)).to.deep.equal({wixSubscriberId: subscriber._id});
+  }
 
-      const subscriptionStatusB = await getSubscriptionStatus(userId);
-      console.log(subscriptionStatusB);
-      chai.expect(!!subscriptionStatusB.isSubscribed).to.equal(true);
-      chai.expect(subscriptionStatusB.subscription).to.exist;
-
-    });
-  });
-
+  async function expectSubscriptionStatusToEqual(expectedStatus) {
+    const subscriptionStatus = await getSubscriptionStatus(userId);
+    chai.expect(subscriptionStatus).to.equal(expectedStatus);
+  }
 });
 

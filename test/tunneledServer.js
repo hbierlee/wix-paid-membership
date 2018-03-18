@@ -1,4 +1,4 @@
-import {post_firstPayment, post_recurringPayment} from '../Backend/http-functions';
+import {post_firstPayment} from '../Backend/http-functions';
 import express from 'express';
 import bodyParser from 'body-parser';
 import ngrok from 'ngrok';
@@ -35,23 +35,11 @@ function startServer(port = DEFAULT_PORT) {
     }
   });
 
-  app.post(`/recurringPayment`, async function (req, res) {
-    try {
-      await post_recurringPayment(new WixHttpFunctionRequest(req.body.id));
-      resolveWebhook();
-      res.sendStatus(200);
-    } catch (e) {
-      console.error('error in tunneledServer', e);
-      res.sendStatus(500)
-    }
-  });
-
-  app.listen(port, () => console.log(`Example app listening on port ${port}`));
+  app.listen(port);
 }
 
 export function setWebhooksToTunnelURL(url) {
   config['FIRST_PAYMENT_WEBHOOK'] = `${url}/firstPayment`;
-  config['RECURRING_PAYMENT_WEBHOOK'] = `${url}/recurringPayment`;
 }
 
 export async function createTunneledServer(port = DEFAULT_PORT) {
@@ -60,19 +48,3 @@ export async function createTunneledServer(port = DEFAULT_PORT) {
   setWebhooksToTunnelURL(url);
   return url;
 }
-
-
-
-// TODO why doesn't this work in the server?
-// app.post('/', async function (req, res, next) {
-//   try {
-//     console.log(next());
-//     console.log('resolve', req.path);
-//     resolveWebhook();
-//     res.sendStatus(200);
-//   } catch (e) {
-//     console.log('error in firstPayment api', e);
-//     rejectWebhook();
-//     res.sendStatus(500);
-//   }
-// });

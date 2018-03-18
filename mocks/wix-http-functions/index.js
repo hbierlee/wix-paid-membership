@@ -7,8 +7,9 @@ module.exports = {
     console.log('notFound', arguments);
     return true;
   },
-  serverError() {
+  serverError(response) {
     console.log('serverError', arguments);
+    console.log('error:', response.body.error);
     return true;
   },
   badRequest() {
