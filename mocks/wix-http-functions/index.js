@@ -15,4 +15,11 @@ module.exports = {
     console.log('badRequest', arguments);
     return false;
   },
+  WixHttpFunctionRequest: class {
+    constructor(paymentId) {
+      this.body = {
+        text: () => `id=${paymentId}`,
+      };
+    }
+  }
 };

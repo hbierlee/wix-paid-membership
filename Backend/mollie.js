@@ -43,18 +43,19 @@ export async function getCustomer(customerId) {
 }
 
 /**
- *
+ * Creates payment in mollie system. Defaults to a 'first' type payment for creating the subscription.
  * @param customerId
- * @param recurringType should be 'first' when creating first payments
+ * @param recurringType
+ * @param webhookUrl
  * @returns {Promise<void>}
  */
-export async function createPayment(customerId, recurringType) {
+export async function createPayment(customerId, recurringType = 'first', webhookUrl = FIRST_PAYMENT_WEBHOOK) {
   const data = {
     customerId,
     amount: SUBSCRIPTION_AMOUNT,
-    description: PAYMENT_DESCRIPTION,  // TODO
+    description: PAYMENT_DESCRIPTION,
     redirectUrl: `${SITE_URL}/${PREMIUM_PAGE_ROUTER_PREFIX}`,
-    webhookUrl: FIRST_PAYMENT_WEBHOOK,
+    webhookUrl,
   };
 
   if (recurringType) {

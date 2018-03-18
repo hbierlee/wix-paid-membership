@@ -1,64 +1,40 @@
 import chai from 'chai';
-
-import prompt from 'prompt';
-import {get} from 'wix-data';
-
-import {handleFirstPayment} from '../backend/http-functions';
-import {handleRecurringPayment, SITE_API_URL} from '../Backend/http-functions';
-import {fetch} from '../mocks/wix-fetch';
-import {SUBSCRIPTION_AMOUNT} from '../Backend/config';
+import opn from 'opn';
 import {subscribe} from '../Backend/subscribe';
 import {db} from '../mocks/wix-data';
 import {createPayment} from '../Backend/mollie';
-
-const config = require('../Backend/config');
+import {createTunneledServer, waitForWebhookToSettle} from './tunneledServer';
+import {RECURRING_PAYMENT_WEBHOOK} from '../Backend/config';
 
 chai.use(require('chai-as-promised'));
 
 const userName = 'memberUserName';
 const email = 'memberEmail@email.com';
 
-async function waitOnUserInput() {
-  return await new Promise((resolve, reject) => {
-    prompt.start();
-    prompt.get(['press return once test payment is accepted with some status'], (err) => {
-      if (err) {
-        return reject(err);
-      } else {
-        return resolve();
-      }
-    });
-  });
-}
-
-function mockMollieRequestToWebhook(paymentId) {
-  return {body: {text: () => `id=${paymentId}`}}
-}
-
 describe('webhook', function () {
 
-  it('should process a payment and (if successful) subscribe the customer. Then, it should unsubscribe the user if the following recurring payment is unsuccessful', async function () {
-    config['FIRST_PAYMENT_WEBHOOK'] = '';  // disable this webhook so we can call it manually
+  before(async function () {
+    await createTunneledServer();
+  });
 
+  // NOTE: we're testing the api endpoints but we're letting mollie call them via the tunneled server
+  it('should process a payment and (if successful) subscribe the customer. Then, it should unsubscribe the user if the following recurring payment is unsuccessful', async function () {
     // subscribe a new user, and let the use accept the 'first' payment
     const firstPayment = await subscribe(userName, email);
-    console.log('accept the first payment by selecting status \'paid\' at the following URL:');
-    console.log(firstPayment.paymentUrl);
-    await waitOnUserInput();
+    console.log('accept the first payment by selecting status \'paid\' at the following URL: ' + firstPayment.paymentUrl);
+    await opn(firstPayment.paymentUrl);
 
-    // handle first payment webhook request
-    await handleFirstPayment(mockMollieRequestToWebhook(firstPayment.paymentId));
-
+    // handle mollie's first payment webhook request
+    await waitForWebhookToSettle();
     chai.expect(db[0].isSubscribed).to.equal(true);
 
     // create the recurring payment and let the user fail the recurring payment
-    const recurringPayment = await createPayment(db[0].mollieCustomerId);
-    console.log('fail the second payment by selecting \'expired\', \'failed\' or \'cancelled\' at the following URL:');
-    console.log(recurringPayment.links.paymentUrl);
-    await waitOnUserInput();
+    const recurringPayment = await createPayment(db[0].mollieCustomerId, false, RECURRING_PAYMENT_WEBHOOK);
+    console.log('fail the second payment by selecting either \'expired\', \'failed\' or \'cancelled\' at the following URL: ' + recurringPayment.links.paymentUrl);
+    await opn(recurringPayment.links.paymentUrl);
 
-    // handle recurring payment webhook request
-    await handleRecurringPayment(mockMollieRequestToWebhook(recurringPayment.id));
+    // handle mollie's recurring payment request via webhook
+    await waitForWebhookToSettle();
     chai.expect(db[0].isSubscribed).to.equal(false);
   });
 });
