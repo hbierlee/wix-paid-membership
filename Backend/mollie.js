@@ -1,12 +1,14 @@
 import {fetch} from 'wix-fetch';
 
 import {
+  FIRST_PAYMENT_AMOUNT,
+  FIRST_PAYMENT_DESCRIPTION,
   FIRST_PAYMENT_WEBHOOK,
   MOLLIE_API_KEY,
-  PAYMENT_DESCRIPTION,
   PREMIUM_PAGE_ROUTER_PREFIX,
   SITE_URL,
   SUBSCRIPTION_AMOUNT,
+  SUBSCRIPTION_DESCRIPTION,
   SUBSCRIPTION_INTERVAL,
 } from './config';
 
@@ -46,8 +48,8 @@ export async function getMollieCustomer(customerId) {
 export async function createFirstMolliePayment(customerId) {
   return await mollieApiWrapper('payments', 'POST', {
     customerId,
-    amount: SUBSCRIPTION_AMOUNT,
-    description: PAYMENT_DESCRIPTION,
+    amount: FIRST_PAYMENT_AMOUNT,
+    description: FIRST_PAYMENT_DESCRIPTION,
     redirectUrl: `${SITE_URL}/${PREMIUM_PAGE_ROUTER_PREFIX}`,
     recurringType: 'first',
     webhookUrl: FIRST_PAYMENT_WEBHOOK,
@@ -61,9 +63,8 @@ export async function getMollieMandates(customerId) {
 export async function createMollieSubscription(customerId) {
   return await mollieApiWrapper(`customers/${customerId}/subscriptions`, 'POST', {
     amount: SUBSCRIPTION_AMOUNT,
-    startDate: getSubscriptionStartDate(),
     interval: SUBSCRIPTION_INTERVAL,
-    description: PAYMENT_DESCRIPTION,
+    description: SUBSCRIPTION_DESCRIPTION,
   });
 }
 
@@ -77,10 +78,4 @@ export async function cancelMollieSubscription(customerId, subscriptionId) {
 
 export async function getMolliePayment(paymentId) {
   return await mollieApiWrapper(`payments/${paymentId}`, 'GET');
-}
-
-// TODO [mollie] making this dynamic is pretty annoying, is there a better way?
-export function getSubscriptionStartDate(now = new Date()) {
-  now.setMonth(now.getMonth() + 1);
-  return now.toISOString().slice(0, 10);
 }
