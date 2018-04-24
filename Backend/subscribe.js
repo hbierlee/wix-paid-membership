@@ -7,7 +7,7 @@ import {
 import {createSubscriber, getSubscriberByUserId, updateSubscriber} from './database';
 
 async function createSubscriberAndMollieCustomer(userId, email) {
-  const subscriber = await createSubscriber(userId);
+  const subscriber = await createSubscriber(userId, email);
   const customer = await createMollieCustomer(userId, email, subscriber._id); // TODO could improve this name to be firstName + lastName if present
 
   subscriber.mollieCustomerId = customer.id;

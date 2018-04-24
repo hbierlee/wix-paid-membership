@@ -7,8 +7,8 @@ export async function getSubscriberByUserId(userId) {
   return subscriberDataQuery.items[0];
 }
 
-export async function createSubscriber(userId) {
-  return await wixData.insert(SUBSCRIBERS_COLLECTION_NAME, {userId});
+export async function createSubscriber(userId, email) {
+  return await wixData.insert(SUBSCRIBERS_COLLECTION_NAME, {userId, email});
 }
 
 // TODO I can make this update call update only the given fields (instead of the default wix-data behaviour of always overwriting the whole object). This would make setSubscription and cancelSubscription better functions. Implementation note: use Object.assign, as rest operators are not supported by wix
