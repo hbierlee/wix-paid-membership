@@ -5,7 +5,7 @@ import {
   FIRST_PAYMENT_DESCRIPTION,
   FIRST_PAYMENT_WEBHOOK,
   MOLLIE_API_KEY,
-  PREMIUM_PAGE_ROUTER_PREFIX,
+  PREMIUM_PAGE_ROUTER_PREFIX, RECURRING_PAYMENT_WEBHOOK,
   SITE_URL,
   SUBSCRIPTION_AMOUNT,
   SUBSCRIPTION_DESCRIPTION,
@@ -19,7 +19,7 @@ import {
  * @param [data] body data fields in case of POST request
  * @returns {Promise<*>}
  */
-async function mollieApiWrapper(path, method, data) {
+export async function mollieApiWrapper(path, method, data) {
   const response = await fetch(`https://api.mollie.com/v1/${path}`, {
     method,
     headers: {
@@ -65,6 +65,7 @@ export async function createMollieSubscription(customerId) {
     amount: SUBSCRIPTION_AMOUNT,
     interval: SUBSCRIPTION_INTERVAL,
     description: SUBSCRIPTION_DESCRIPTION,
+    webhookUrl: RECURRING_PAYMENT_WEBHOOK,
   });
 }
 

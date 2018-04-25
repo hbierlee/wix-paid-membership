@@ -2,10 +2,13 @@ import chai from 'chai';
 import {db} from 'wix-data';
 
 import opn from 'opn';
-import {createTunneledServer, waitForWebhookToSettle} from './tunneledServer';
+import {createTunneledServer, waitForWebhookToBeCalled} from './tunneledServer';
 import {getSubscriptionStatus, subscribe, unsubscribe} from '../Backend/subscribe';
-import {getMollieCustomer} from '../Backend/mollie';
+import {getMollieCustomer, mollieApiWrapper} from '../Backend/mollie';
 import {remove} from '../mocks/wix-data';
+import {post_recurringPayment} from '../Backend/http-functions';
+import {WixHttpFunctionRequest} from '../mocks/wix-http-functions';
+
 
 describe('subscriptions', function () {
 
@@ -39,7 +42,7 @@ describe('subscriptions', function () {
 
     console.log('accept the first payment by selecting status \'paid\' at the following URL: ' + firstSubscribeResult.paymentUrl);
     await opn(firstSubscribeResult.paymentUrl);
-    await waitForWebhookToSettle();
+    await waitForWebhookToBeCalled();
 
     const firstSubscriptionId = db[0].mollieSubscriptionId;
     chai.expect(firstSubscriptionId).to.be.an('string');
@@ -67,10 +70,42 @@ describe('subscriptions', function () {
 
     console.log('accept the first payment by selecting status \'paid\' at the following URL: ' + resubscribeResult.paymentUrl);
     await opn(resubscribeResult.paymentUrl);
-    await waitForWebhookToSettle();
+    await waitForWebhookToBeCalled();
     await expectSubscriptionStatusToEqual('active');
     chai.expect(db[0].mollieSubscriptionId).to.be.an('string');
     chai.expect(db[0].mollieSubscriptionId).to.not.equal(firstSubscriptionId); // expect this to be updated
+  });
+
+  async function waitForFirstSubscriptionPayment(customerId) {
+    return new Promise((resolve, reject) => {
+      const interval = setInterval(async () => {
+        try {
+          console.log('checking');
+          const payments = await mollieApiWrapper(`customers/${customerId}/payments`, 'GET');
+
+          if (payments.count === 2) {
+            resolve(payments.data[0]);  // resolve with the most recent payment
+            clearInterval(interval);
+          }
+        } catch (e) {
+          reject(e);
+        }
+      }, 10000);
+    });
+  }
+
+  /**
+   * This test case might take 5-15 minutes
+   */
+  it('should handle recurring payment requests', async function () {
+    const {paymentUrl, mollieCustomerId} = await subscribe(userId, email);
+    console.log('accept the first payment by selecting status \'paid\' at the following URL: ' + paymentUrl);
+    opn(paymentUrl);
+    await waitForWebhookToBeCalled();
+    const firstSubscriptionPayment = await waitForFirstSubscriptionPayment(mollieCustomerId);
+    await post_recurringPayment(new WixHttpFunctionRequest(firstSubscriptionPayment.id));
+
+    chai.expect(db[0].hasActiveSubscription).to.be.true;
   });
 
   async function checkSubscriberWithMollieCustomer(subscriber, subscribeResult) {
@@ -90,6 +125,10 @@ describe('subscriptions', function () {
     chai.expect(customer.name).to.equal(subscriber.userId);
     chai.expect(customer.email).to.equal(email);
     chai.expect(JSON.parse(customer.metadata)).to.deep.equal({wixSubscriberId: subscriber._id});
+
+    // verify mollie customer subscription
+    const subscriptionStatus = await await getSubscriptionStatus(userId);
+    chai.expect(!!subscriber.hasActiveSubscription).to.equal(subscriptionStatus && subscriptionStatus.status === 'active');
   }
 
   async function expectSubscriptionStatusToEqual(expectedStatus) {

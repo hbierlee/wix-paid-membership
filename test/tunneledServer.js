@@ -1,4 +1,5 @@
-import {post_firstPayment} from '../Backend/http-functions';
+import {fetch} from 'wix-fetch';
+import {post_firstPayment, post_recurringPayment} from '../Backend/http-functions';
 import express from 'express';
 import bodyParser from 'body-parser';
 import ngrok from 'ngrok';
@@ -8,11 +9,12 @@ const config = require('../Backend/config');
 
 const DEFAULT_PORT = 3000;
 
+let TUNNELED_SERVER_URL;
 let resolveWebhook;
 let rejectWebhook;
 
-export async function waitForWebhookToSettle() {
-  return await new Promise((resolve, reject) => {
+export async function waitForWebhookToBeCalled() {
+  return new Promise((resolve, reject) => {
     resolveWebhook = resolve;
     rejectWebhook = reject;
   })
@@ -30,7 +32,18 @@ function startServer(port = DEFAULT_PORT) {
       resolveWebhook();
       res.sendStatus(200);
     } catch (e) {
-      console.error('error in tunneledServer', e);
+      console.error('error in tunneledServer in firstPayment', e);
+      res.sendStatus(500)
+    }
+  });
+
+  app.post(`/recurringPayment`, async function (req, res) {
+    try {
+      await post_recurringPayment(new WixHttpFunctionRequest(req.body.id));
+      resolveWebhook();
+      res.sendStatus(200);
+    } catch (e) {
+      console.error('error in tunneledServer in recurringPayment', e);
       res.sendStatus(500)
     }
   });
@@ -38,13 +51,18 @@ function startServer(port = DEFAULT_PORT) {
   app.listen(port);
 }
 
-export function setWebhooksToTunnelURL(url) {
-  config['FIRST_PAYMENT_WEBHOOK'] = `${url}/firstPayment`;
+// TODO doesn't work somehow, might fix in the future
+export async function callTunneledServer(endpoint, paymentId) {
+  return TUNNELED_SERVER_URL && await fetch(`${TUNNELED_SERVER_URL}/${endpoint}`, {
+    method: 'POST',
+    body: JSON.stringify(paymentId),
+  });
 }
 
 export async function createTunneledServer(port = DEFAULT_PORT) {
   await startServer(port);
-  const url = await ngrok.connect(port);
-  setWebhooksToTunnelURL(url);
-  return url;
+  TUNNELED_SERVER_URL = await ngrok.connect(port);
+  config['FIRST_PAYMENT_WEBHOOK'] = `${TUNNELED_SERVER_URL}/firstPayment`;
+  config['RECURRING_PAYMENT_WEBHOOK'] = `${TUNNELED_SERVER_URL}/recurringPayment`;
+  return TUNNELED_SERVER_URL;
 }

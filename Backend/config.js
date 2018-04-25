@@ -37,3 +37,4 @@ const SITE_API_URL = `${SITE_URL}/_functions`; // there is dev mode if you chang
 
 // You don't have to touch these, except if you want to change/disable them for unit testing purposes
 export const FIRST_PAYMENT_WEBHOOK = `${SITE_API_URL}/firstPayment`;
+export const RECURRING_PAYMENT_WEBHOOK = `${SITE_API_URL}/recurringPayment`;

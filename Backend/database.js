@@ -19,10 +19,12 @@ export async function updateSubscriber(subscriber) {
 export async function setSubscription(subscriberId, mollieSubscriptionId) {
   const subscriber = await wixData.get(SUBSCRIBERS_COLLECTION_NAME, subscriberId, {suppressAuth: true});  // this code will be called by mollie webhook which will have 'visitor' rights, so we need to bypass auth to read/write to this collection
   subscriber.mollieSubscriptionId = mollieSubscriptionId;
+  subscriber.hasActiveSubscription = true;
   return await wixData.update(SUBSCRIBERS_COLLECTION_NAME, subscriber, {suppressAuth: true});
 }
 
 export async function cancelSubscription(subscriberId) {
   const subscriber = await wixData.get(SUBSCRIBERS_COLLECTION_NAME, subscriberId, {suppressAuth: true});  // this code will be called by mollie webhook which will have 'visitor' rights, so we need to bypass auth to read/write to this collection
+  subscriber.hasActiveSubscription = false;
   return await wixData.update(SUBSCRIBERS_COLLECTION_NAME, subscriber, {suppressAuth: true});
 }
