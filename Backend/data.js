@@ -39,5 +39,16 @@ export function Subscribers_beforeUpdate(item, context) {
       .catch(() => Promise.resolve(item)); // this means there's no subscription
   }
 }
+
+
+export function Subscribers_beforeRemove(itemId, context) {
+  const {currentItem: {mollieCustomerId, mollieSubscriptionId}} = context;
+  if (mollieCustomerId && mollieSubscriptionId) {
+    cancelMollieSubscription(
+      mollieCustomerId,
+      mollieSubscriptionId,
+    )
+      .then(() => Promise.resolve(itemId))
+      .catch(() => Promise.resolve(itemId));  // this means there's no subscription
   }
 }
