@@ -10,8 +10,7 @@ export const SITE_URL = 'https://bierleehenk.wixsite.com/henk-bierlee'; // your 
     - Who can update content from this collection? Site member author  // TODO maybe this one should be admin as well
     - Who can delete content from this collection? Admin
  */
-export const SUBSCRIBERS_COLLECTION_NAME = 'Subscribers';  // the name of database collection that stores your subscribers
-
+export const SUBSCRIBERS_COLLECTION_NAME = 'Subscribers';  // the name of database collection that stores your subscribers; If you change this, change the function names of the hooks in Backend/data.js as well!
 
 // Mollie API keys (!!! KEEP THESE SECRET, IF YOU MAKE YOUR CODE PUBLIC, REMOVE THESE KEYS !!!)
 const MOLLIE_TEST_API_KEY = 'test_xDBcNmGEcf9dfHxjCw9TtbjPj554cb';
