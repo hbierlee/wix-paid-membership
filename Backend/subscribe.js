@@ -17,7 +17,7 @@ async function createSubscriberAndMollieCustomer(userId, email) {
 export async function subscribe(userId, email) {
   const subscriber = await getSubscriberByUserId(userId) || await createSubscriberAndMollieCustomer(userId, email);
 
-  if (await getSubscriptionStatus(userId) === 'active') {
+  if (await hasActiveSubscription(userId)) {
     throw new Error(`The user with userId ${userId} is already subscribed.`);
   } else {  // create first payment to create new subscription
     const payment = await createFirstMolliePayment(subscriber.mollieCustomerId);
@@ -25,9 +25,9 @@ export async function subscribe(userId, email) {
   }
 }
 
-export async function getSubscriptionStatus(userId) {
-  const subscription = await getMollieSubscriptionByUserId(userId);
-  return subscription ? subscription.status : 'none';
+export async function hasActiveSubscription(userId) {
+  const subscriber = await getSubscriberByUserId(userId);
+  return subscriber && subscriber.hasActiveSubscription;
 }
 
 export async function getMollieSubscriptionByUserId(userId) {
@@ -44,9 +44,8 @@ export async function getMollieSubscriptionByUserId(userId) {
 }
 
 export async function unsubscribe(userId) {
-  const subscription = await getMollieSubscriptionByUserId(userId);
-  if (subscription) {
-    await cancelMollieSubscription(subscription.customerId, subscription.id);
-    await cancelSubscription(userId);
+  const subscriber = await getSubscriberByUserId(userId);
+  if (subscriber) {
+    await cancelSubscription(userId); // database hook takes care of DELETE call to cancel Mollie subscription
   }
 }

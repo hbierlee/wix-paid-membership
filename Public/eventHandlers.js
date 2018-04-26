@@ -16,7 +16,11 @@ export async function onSubscribe() {
 }
 
 export async function onUnsubscribe() {
-  await unsubscribe(wixUsers.currentUser.id);
+  try {
+    await unsubscribe(wixUsers.currentUser.id);
+  } catch (e) {
+    console.log('Error in unsubscribe', e);
+  }
   refresh();
 }
 

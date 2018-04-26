@@ -1,21 +1,28 @@
 import {ok, redirect, WixRouterSitemapEntry} from 'wix-router';
 import {PREMIUM_PAGE_KEY, PREMIUM_PAGE_ROUTER_PREFIX, PREMIUM_PAGE_TITLE, SUBSCRIBE_PAGE_URL} from './config';
-import {getSubscriptionStatus} from './subscribe';
+import {getSubscriberByUserId} from './database';
 
 export async function premium_router(request) {
   try {
-    const {user} = request;
-
-    if (user.role === 'Admin' || user.role === 'siteAdmin' || user.role === 'siteOwner') {
+    if (await hasPremiumAccess(request.user)) {
       return ok(PREMIUM_PAGE_KEY);
-    } else if ((user.role === 'Member' || user.role === 'siteMember') && await getSubscriptionStatus(user.id) === 'active') { // role naming seems to be different ('siteMember') when routing for some reason
-      return ok(PREMIUM_PAGE_KEY);
-    } else {  // 'Visitor', 'anonymous'
+    } else {
       return redirect(SUBSCRIBE_PAGE_URL);
     }
   } catch (e) {
     console.error('error in router', e);
     return redirect(SUBSCRIBE_PAGE_URL);
+  }
+}
+
+async function hasPremiumAccess({id, role}) {
+  if (role === 'Admin' || role === 'siteAdmin' || role === 'siteOwner') {
+    return true;
+  } else if (role === 'Member' || role === 'siteMember') { // role naming seems to be different ('siteMember') when routing for some reason
+    const subscriber = await getSubscriberByUserId(id);
+    return subscriber && subscriber.hasActiveSubscription;
+  } else {
+    return false;
   }
 }
 

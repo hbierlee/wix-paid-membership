@@ -7,7 +7,7 @@ import {
   getMolliePayment,
   getMollieSubscription,
 } from './mollie';
-import {cancelSubscription, setSubscription} from './database';
+import {cancelSubscriptionWithSuppressAuth, setSubscription} from './database';
 import {IS_PRODUCTION} from './config';
 
 const response = {
@@ -81,6 +81,6 @@ export async function handleRecurringPayment({customerId, subscriptionId}) {
   if (subscription.status === 'active') {
     await setSubscription(wixSubscriberId, subscriptionId);
   } else {
-    await cancelSubscription(wixSubscriberId);
+    await cancelSubscriptionWithSuppressAuth(wixSubscriberId);
   }
 }
