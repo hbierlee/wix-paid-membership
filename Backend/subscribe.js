@@ -4,7 +4,7 @@ import {
   createMollieCustomer,
   getMollieSubscription,
 } from './mollie';
-import {createSubscriber, getSubscriberByUserId, updateSubscriber} from './database';
+import {cancelSubscription, createSubscriber, getSubscriberByUserId, updateSubscriber} from './database';
 
 async function createSubscriberAndMollieCustomer(userId, email) {
   const subscriber = await createSubscriber(userId, email);
@@ -47,5 +47,6 @@ export async function unsubscribe(userId) {
   const subscription = await getMollieSubscriptionByUserId(userId);
   if (subscription) {
     await cancelMollieSubscription(subscription.customerId, subscription.id);
+    await cancelSubscription(userId);
   }
 }
