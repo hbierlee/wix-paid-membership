@@ -1,9 +1,4 @@
-import {
-  cancelMollieSubscription,
-  createFirstMolliePayment,
-  createMollieCustomer,
-  getMollieSubscription,
-} from './mollie';
+import {createFirstMolliePayment, createMollieCustomer} from './mollie';
 import {cancelSubscription, createSubscriber, getSubscriberByUserId, updateSubscriber} from './database';
 
 async function createSubscriberAndMollieCustomer(userId, email) {
@@ -28,19 +23,6 @@ export async function subscribe(userId, email) {
 export async function hasActiveSubscription(userId) {
   const subscriber = await getSubscriberByUserId(userId);
   return subscriber && subscriber.hasActiveSubscription;
-}
-
-export async function getMollieSubscriptionByUserId(userId) {
-  const subscriber = await getSubscriberByUserId(userId);
-  if (!subscriber || !subscriber.mollieSubscriptionId) {
-    return undefined;
-  }
-
-  try {
-    return await getMollieSubscription(subscriber.mollieCustomerId, subscriber.mollieSubscriptionId);
-  } catch (e) { // subscription is non-existent or cancelled
-    return undefined;
-  }
 }
 
 export async function unsubscribe(userId) {
