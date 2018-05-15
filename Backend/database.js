@@ -2,8 +2,8 @@ import wixData from 'wix-data';
 
 import {SUBSCRIBERS_COLLECTION_NAME} from './config';
 
-export async function getSubscriberByUserId(userId) {
-  const subscriberDataQuery = await wixData.query(SUBSCRIBERS_COLLECTION_NAME).eq('userId', userId).find();
+export async function getSubscriberByUserId(userId, suppressAuth=false) {
+  const subscriberDataQuery = await wixData.query(SUBSCRIBERS_COLLECTION_NAME, {suppressAuth}).eq('userId', userId).find();
   return subscriberDataQuery.items[0];
 }
 
@@ -24,9 +24,9 @@ export async function setSubscription(subscriberId, mollieSubscriptionId) {
 }
 
 export async function cancelSubscriptionWithSuppressAuth(userId) {
-  const subscriber = await wixData.get(SUBSCRIBERS_COLLECTION_NAME, userId, {suppressAuth: true});  // this code will be called by mollie webhook which will have 'visitor' rights, so we need to bypass auth to read/write to this collection
+  const subscriber = await getSubscriberByUserId(userId, true); // this code will be called by mollie webhook which will have 'visitor' rights, so we need to bypass auth to read/write to this collection
   subscriber.hasActiveSubscription = false;
-  return await wixData.update(SUBSCRIBERS_COLLECTION_NAME, subscriber, {suppressAuth: true});
+  return await wixData.update(SUBSCRIBERS_COLLECTION_NAME, subscriber, {suppressAuth: true}); // mollie account will be cancelled via the webhook
 }
 
 export async function cancelSubscription(userId) {
