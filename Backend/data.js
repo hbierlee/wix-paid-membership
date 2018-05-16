@@ -1,4 +1,7 @@
-import {cancelMollieSubscription, getMollieSubscription} from './mollie';
+import {
+  cancelMollieSubscription,
+  getMollieSubscription
+} from './mollie';
 
 const log = [];
 
@@ -7,7 +10,10 @@ function print(statement) {
 }
 
 function reject(reason) {
-  return Promise.reject({reason, log});
+  return Promise.reject({
+    reason,
+    log
+  });
 }
 
 function shouldDeleteSubscription(newItem, oldItem) {
@@ -20,35 +26,32 @@ function shouldDeleteSubscription(newItem, oldItem) {
 }
 
 export function Subscribers_beforeUpdate(item, context) {
-  const {currentItem} = context;
+  const {
+    currentItem
+  } = context;
   if (shouldDeleteSubscription(item, currentItem)) {
-    return getMollieSubscription(
-      item.mollieCustomerId,
-      item.mollieSubscriptionId,
-    )
+    return getMollieSubscription(item.mollieCustomerId, item.mollieSubscriptionId)
       .then(subscription => {
         if (subscription && subscription.status === 'active') {
-          cancelMollieSubscription(
-            item.mollieCustomerId,
-            item.mollieSubscriptionId,
-          )
-            .then(() => Promise.resolve(item))
-            .catch(e => Promise.reject(`Error in canceling subscription: ${e}`));
+          return cancelMollieSubscription(item.mollieCustomerId, item.mollieSubscriptionId)
+            .then(() => item)
+            .catch(reject);
         }
       })
       .catch(() => Promise.resolve(item)); // this means there's no subscription
   }
 }
 
-
 export function Subscribers_beforeRemove(itemId, context) {
-  const {currentItem: {mollieCustomerId, mollieSubscriptionId}} = context;
-  if (mollieCustomerId && mollieSubscriptionId) {
-    cancelMollieSubscription(
+  const {
+    currentItem: {
       mollieCustomerId,
-      mollieSubscriptionId,
-    )
-      .then(() => Promise.resolve(itemId))
-      .catch(() => Promise.resolve(itemId));  // this means there's no subscription
+      mollieSubscriptionId
+    }
+  } = context;
+  if (mollieCustomerId && mollieSubscriptionId) {
+    return cancelMollieSubscription(mollieCustomerId, mollieSubscriptionId)
+      .then(() => itemId)
+      .catch(() => Promise.resolve(itemId)); // this means there's no subscription
   }
 }
