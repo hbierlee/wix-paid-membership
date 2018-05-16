@@ -1,5 +1,5 @@
 import chai from 'chai';
-import {premium_sitemap} from '../Backend/router';
+import {premium_sitemap} from '../Backend/routers';
 
 describe('sitemap', function () {
 
