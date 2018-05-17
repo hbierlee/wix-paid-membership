@@ -128,6 +128,7 @@ But if your site's URL is actually https://www.mysite.com, the line should becom
 
 #### Table of configuration fields
 There is no reason to edit the configuration fields that are not mentioned in the following table.
+
 |FIELD_NAME|field-value|
 |--|--|
 |`IS_PRODUCTION`|Whether the payments will be made with real money. This is the only field where you *don't have to put quotes*. Leave it at `false` for now, so we can do a test at the end. If everything works, we will change it to `true` as final step.|
