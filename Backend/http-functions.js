@@ -66,7 +66,7 @@ async function handleFirstPayment(payment) {
     const subscription = await createMollieSubscription(customerId);
     await setSubscription(wixSubscriberId, subscription.id);
   } else {
-    throw `the mandate status was ${mandate ? mandate.status : 'not defined'} and the payment status was ${payment.status}, so subscription was not granted.`;
+    throw new Error(`the mandate status was ${mandate ? mandate.status : 'not defined'} and the payment status was ${payment.status}, so subscription was not granted.`);
   }
 }
 
