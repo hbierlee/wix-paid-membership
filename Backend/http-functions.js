@@ -39,11 +39,11 @@ async function apiWrapper(request, handler) {
 }
 
 // API endpoints
-export async function post_firstPayment(request) {
+export async function post_wixPaidMembershipFirstPayment(request) {
   return await apiWrapper(request, handleFirstPayment);
 }
 
-export async function post_recurringPayment(request) {
+export async function post_wixPaidMembershipRecurringPayment(request) {
   return await apiWrapper(request, handleRecurringPayment);
 }
 
