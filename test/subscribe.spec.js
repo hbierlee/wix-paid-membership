@@ -36,7 +36,7 @@ describe('subscriptions', function () {
     const secondSubscribeResult = await subscribe(userId, email);
     await expectSubscriptionStatusToEqual(false);
     chai.expect(db).to.be.lengthOf(1);
-    checkSubscriberWithMollieCustomer(db[0], secondSubscribeResult);
+    await checkSubscriberWithMollieCustomer(db[0], secondSubscribeResult);
     chai.expect(secondSubscribeResult.mollieCustomerId).to.equal(firstSubscribeResult.mollieCustomerId);
 
     console.log('accept the first payment by selecting status \'paid\' at the following URL: ' + firstSubscribeResult.paymentUrl);
