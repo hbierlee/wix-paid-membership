@@ -6,7 +6,7 @@ import {createTunneledServer, waitForWebhookToBeCalled} from './tunneledServer';
 import {hasActiveSubscription, subscribe, unsubscribe} from '../Backend/subscribe';
 import {cancelMollieSubscription, getMollieCustomer, mollieApiWrapper} from '../Backend/mollie';
 import {remove} from '../mocks/wix-data';
-import {post_recurringPayment} from '../Backend/http-functions';
+import {post_wixPaidMembershipRecurringPayment} from '../Backend/http-functions';
 import {WixHttpFunctionRequest} from '../mocks/wix-http-functions';
 
 
@@ -104,7 +104,7 @@ describe('subscriptions', function () {
     opn(paymentUrl);
     await waitForWebhookToBeCalled();
     const firstSubscriptionPayment = await waitForFirstSubscriptionPayment(mollieCustomerId);
-    await post_recurringPayment(new WixHttpFunctionRequest(firstSubscriptionPayment.id));
+    await post_wixPaidMembershipRecurringPayment(new WixHttpFunctionRequest(firstSubscriptionPayment.id));
 
     chai.expect(db[0].hasActiveSubscription).to.be.true;
   });

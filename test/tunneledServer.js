@@ -1,5 +1,5 @@
 import {fetch} from 'wix-fetch';
-import {post_firstPayment, post_recurringPayment} from '../Backend/http-functions';
+import {post_wixPaidMembershipFirstPayment, post_wixPaidMembershipRecurringPayment} from '../Backend/http-functions';
 import express from 'express';
 import bodyParser from 'body-parser';
 import ngrok from 'ngrok';
@@ -28,7 +28,7 @@ function startServer(port = DEFAULT_PORT) {
 
   app.post(`/firstPayment`, async function (req, res) {
     try {
-      await post_firstPayment(new WixHttpFunctionRequest(req.body.id));
+      await post_wixPaidMembershipFirstPayment(new WixHttpFunctionRequest(req.body.id));
       resolveWebhook();
       res.sendStatus(200);
     } catch (e) {
@@ -39,7 +39,7 @@ function startServer(port = DEFAULT_PORT) {
 
   app.post(`/recurringPayment`, async function (req, res) {
     try {
-      await post_recurringPayment(new WixHttpFunctionRequest(req.body.id));
+      await post_wixPaidMembershipRecurringPayment(new WixHttpFunctionRequest(req.body.id));
       resolveWebhook();
       res.sendStatus(200);
     } catch (e) {
