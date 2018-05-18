@@ -38,7 +38,13 @@ export function Subscribers_beforeUpdate(item, context) {
             .catch(reject);
         }
       })
-      .catch(() => Promise.resolve(item)); // this means there's no subscription
+      .catch(error => {
+        if (error.status === 410 || error.status === 404) { // subscription is already cancelled or not found
+          return Promise.resolve(item);
+        } else {
+          return reject(error);
+        }
+      });
   }
 }
 

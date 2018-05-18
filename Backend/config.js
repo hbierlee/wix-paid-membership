@@ -18,6 +18,7 @@ const MOLLIE_LIVE_API_KEY = '..';  // TODO
 export const MOLLIE_API_KEY = IS_PRODUCTION ? MOLLIE_LIVE_API_KEY : MOLLIE_TEST_API_KEY;
 
 // payment/subscription settings
+export const CURRENCY = 'EUR';
 export const FIRST_PAYMENT_AMOUNT = '0.01'; // It is the activation cost of your subscription (which you might want to keep at the negligible price of 0.01). Has to be more than '0.00'.
 export const SUBSCRIPTION_AMOUNT = '12.95';  // subscription cost per interval // TODO [mollie] auto-subtract mollie transaction fee here? Or instruct the user how to do this?
 export const SUBSCRIPTION_INTERVAL = '1 month';  // (`… months`, `… weeks`, `… days`) Interval to wait between charges like 1 month(s) or 14 days.

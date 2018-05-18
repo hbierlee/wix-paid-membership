@@ -16,7 +16,7 @@ export async function subscribe(userId, email) {
     throw new Error(`The user with userId ${userId} is already subscribed.`);
   } else {  // create first payment to create new subscription
     const payment = await createFirstMolliePayment(subscriber.mollieCustomerId);
-    return {paymentUrl: payment.links.paymentUrl, paymentId: payment.id, mollieCustomerId: subscriber.mollieCustomerId};
+    return {paymentUrl: payment._links.checkout.href, paymentId: payment.id, mollieCustomerId: subscriber.mollieCustomerId};
   }
 }
 
