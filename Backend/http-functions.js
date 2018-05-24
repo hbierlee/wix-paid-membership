@@ -56,8 +56,8 @@ async function parseRequestBody(request) {
 
 async function handleFirstPayment(payment) {
   const {customerId} = payment;
-  const [customer, mandates] = await Promise.all([await getMollieCustomer(customerId), await getMollieMandates(customerId)]);
-  const mandate = mandates.data[0]; // TODO [mollie] how do you know which mandate will be used for which description?
+  const [customer, {_embedded: {mandates}}] = await Promise.all([await getMollieCustomer(customerId), await getMollieMandates(customerId)]);
+  const mandate = mandates[0]; // TODO [mollie] how do you know which mandate will be used for which description?
 
   const {wixSubscriberId} = JSON.parse(customer.metadata);
 

@@ -44,7 +44,7 @@ describe('subscriptions', function () {
     await waitForWebhookToBeCalled();
 
     const firstSubscriptionId = db[0].mollieSubscriptionId;
-    chai.expect(firstSubscriptionId).to.be.an('string');
+    chai.expect(firstSubscriptionId).to.be.a('string');
     await expectSubscriptionStatusToEqual(true);
 
     // shouldn't be able to re-subscribe while having active subscription
@@ -82,10 +82,10 @@ describe('subscriptions', function () {
       const interval = setInterval(async () => {
         try {
           console.log('checking');
-          const payments = await mollieApiWrapper(`customers/${customerId}/payments`, 'GET');
+          const {_embedded: {payments}, count} = await mollieApiWrapper(`customers/${customerId}/payments`, 'GET');
 
-          if (payments.count === 2) {
-            resolve(payments.data[0]);  // resolve with the most recent payment
+          if (count === 2) {
+            resolve(payments[0]);  // resolve with the most recent payment
             clearInterval(interval);
           }
         } catch (e) {

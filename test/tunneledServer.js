@@ -26,24 +26,24 @@ function startServer(port = DEFAULT_PORT) {
   app.use(bodyParser.urlencoded({extended: false}));
   app.use(bodyParser.json());
 
-  app.post(`/firstPayment`, async function (req, res) {
+  app.post(`/wixPaidMembershipFirstPayment`, async function (req, res) {
     try {
       await post_wixPaidMembershipFirstPayment(new WixHttpFunctionRequest(req.body.id));
       resolveWebhook();
       res.sendStatus(200);
     } catch (e) {
-      console.error('error in tunneledServer in firstPayment', e);
+      console.error('error in tunneledServer in wixPaidMembershipFirstPayment', e);
       res.sendStatus(500)
     }
   });
 
-  app.post(`/recurringPayment`, async function (req, res) {
+  app.post(`/wixPaidMembershipRecurringPayment`, async function (req, res) {
     try {
       await post_wixPaidMembershipRecurringPayment(new WixHttpFunctionRequest(req.body.id));
       resolveWebhook();
       res.sendStatus(200);
     } catch (e) {
-      console.error('error in tunneledServer in recurringPayment', e);
+      console.error('error in tunneledServer in wixPaidMembershipRecurringPayment', e);
       res.sendStatus(500)
     }
   });
@@ -62,7 +62,7 @@ export async function callTunneledServer(endpoint, paymentId) {
 export async function createTunneledServer(port = DEFAULT_PORT) {
   await startServer(port);
   TUNNELED_SERVER_URL = await ngrok.connect(port);
-  config['FIRST_PAYMENT_WEBHOOK'] = `${TUNNELED_SERVER_URL}/firstPayment`;
-  config['RECURRING_PAYMENT_WEBHOOK'] = `${TUNNELED_SERVER_URL}/recurringPayment`;
+  config['FIRST_PAYMENT_WEBHOOK'] = `${TUNNELED_SERVER_URL}/wixPaidMembershipFirstPayment`;
+  config['RECURRING_PAYMENT_WEBHOOK'] = `${TUNNELED_SERVER_URL}/wixPaidMembershipRecurringPayment`;
   return TUNNELED_SERVER_URL;
 }
