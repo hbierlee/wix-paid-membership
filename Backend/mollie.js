@@ -31,7 +31,6 @@ export async function mollieApiWrapper(path, method, data) {
   });
 
   const json = await response.json();
-  console.log('json', json);
 
   if (response.ok) {
     return json;
@@ -51,7 +50,6 @@ export async function getMollieCustomer(customerId) {
 }
 
 export async function createFirstMolliePayment(customerId) {
-  console.log('create',customerId);
   return await mollieApiWrapper('payments', 'POST', {
     customerId,
     amount: {

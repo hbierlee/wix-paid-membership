@@ -71,7 +71,6 @@ describe('subscriptions', function () {
     console.log('resubscribe case: accept the first payment by selecting status \'paid\' at the following URL: ' + resubscribeResult.paymentUrl);
     opn(resubscribeResult.paymentUrl);
     await waitForWebhookToBeCalled();
-    console.log(db);
     await expectSubscriptionStatusToEqual(true);
     chai.expect(db[0].mollieSubscriptionId).to.be.an('string');
     chai.expect(db[0].mollieSubscriptionId).to.not.equal(firstSubscriptionId); // expect this to be updated
