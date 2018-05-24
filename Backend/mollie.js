@@ -1,6 +1,7 @@
 import {fetch} from 'wix-fetch';
 
 import {
+  CURRENCY,
   FIRST_PAYMENT_AMOUNT,
   FIRST_PAYMENT_DESCRIPTION,
   FIRST_PAYMENT_WEBHOOK,
@@ -20,20 +21,23 @@ import {
  * @returns {Promise<*>}
  */
 export async function mollieApiWrapper(path, method, data) {
-  const response = await fetch(`https://api.mollie.com/v1/${path}`, {
+  const response = await fetch(`https://api.mollie.com/v2/${path}`, {
     method,
     headers: {
       Authorization: `Bearer ${MOLLIE_API_KEY}`,
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
   });
 
   const json = await response.json();
 
-  if (json.error) {
-    throw new Error(`Error in mollie API call:\n${JSON.stringify(json.error, null, 2)}`);
-  } else {
+  if (response.ok) {
     return json;
+  } else {
+    return Promise.reject(json);
+    // throw new Error(`Error in mollie API call:\n${JSON.stringify(json.error, null, 2)}`);
+    // return json;
   }
 }
 
@@ -48,10 +52,13 @@ export async function getMollieCustomer(customerId) {
 export async function createFirstMolliePayment(customerId) {
   return await mollieApiWrapper('payments', 'POST', {
     customerId,
-    amount: FIRST_PAYMENT_AMOUNT,
+    amount: {
+      value: FIRST_PAYMENT_AMOUNT,
+      currency: CURRENCY,
+    },
     description: FIRST_PAYMENT_DESCRIPTION,
     redirectUrl: `${SITE_URL}/${PREMIUM_PAGE_ROUTER_PREFIX}`,
-    recurringType: 'first',
+    sequenceType: 'first',
     webhookUrl: FIRST_PAYMENT_WEBHOOK,
   });
 }
@@ -62,7 +69,10 @@ export async function getMollieMandates(customerId) {
 
 export async function createMollieSubscription(customerId) {
   return await mollieApiWrapper(`customers/${customerId}/subscriptions`, 'POST', {
-    amount: SUBSCRIPTION_AMOUNT,
+    amount: {
+      value: SUBSCRIPTION_AMOUNT,
+      currency: CURRENCY,
+    },
     interval: SUBSCRIPTION_INTERVAL,
     description: SUBSCRIPTION_DESCRIPTION,
     webhookUrl: RECURRING_PAYMENT_WEBHOOK,
