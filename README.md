@@ -4,7 +4,7 @@ This is an example project and tutorial on how to add Paid Membership to your Wi
 - [Feature thread on the Wix Code forum](https://www.wix.com/code/home/forum/show-off-your-work/paid-membership-2)  
   
 ## Motivation  
-In my view, [Wix](https://www.wix.com) provides a smooth CMS experience, but I quickly discovered that Paid Membership was lacking official support and that the Wix community had been requesting this feature for a long time. Fortunately, the Wix Code scripting suite was powerful enough to develop it myself by integrating the payment service [Mollie](http://mollie.com/). I am making the project available to the rest of the Wix community.  
+In my view, [Wix](https://www.wix.com) provides a smooth CMS experience, but I quickly discovered that Paid Membership was lacking official support and that the Wix community had been requesting this feature for a long time. Fortunately, the Wix Code scripting suite was powerful enough to develop it myself by integrating the payment service provider [Mollie](http://mollie.com/). I am making the project available to the rest of the Wix community.  
   
 For funding, I approached Mollie and signed a partnership. I receive a percentage of the transaction fee that is charged for each transaction. This percentage comes out of their cut, so of course you don't pay any extra because of this. You can find their pricing model [here](https://www.mollie.com/pricing/). Before the partnership, Mollie was already my payment service provider of choice because of the cheap and transparent pricing, and their excellent API.  
   
@@ -113,7 +113,9 @@ You can also add a link to your site's menu via the Wix Editor by clicking the t
 We're going to take a little break from Wix and register a Mollie account. Mollie is a payment service provider, which means they provide the various payment methods so that your clients can use their favourite bank securely.  
   
 1. Create your Mollie account [here](https://www.mollie.com)  
-2. Add the payment methods that you want to support on your site and go through the necessary verification steps. What verification is needed depends on which payment methods you want to add.  
+2. In `Settings->Payment Methods`, enable one or more of your preferred payment methods that you want your customers to be able to use.
+    - The following methods are supported: `bancontact belfius creditcard ideal inghomepay kbc sofort`
+3. If you use any other payment method than `creditcard`, you must also enable the `SEPA direct debit` payment method
   
 ### Configuration  
 The last step brings it all together: editing `config.js`. Open `Backend/config.js` with the Wix Code Editor. There will be lots of fields here with the default configuration. Some need to be changed to info specific to your site. The format of each configuration field is `export const FIELD_NAME = 'field-value';`. Where necessary, you need to replace the `field-value` part (but leave the quotes!).  
@@ -134,7 +136,8 @@ There is no reason to edit the configuration fields that are not mentioned in th
 |`IS_PRODUCTION`|Whether the payments will be made with real money. This is the only field where you *don't have to put quotes*. Leave it at `false` for now, so we can do a test at the end. If everything works, we will change it to `true` as final step.|  
 |`SITE_URL`|The URL of the homepage of your site, like `https://www.mysite.com` (no trailing slash!)|  
 |`SUBSCRIBERS_COLLECTION_NAME`|The database collection name. If you named the database collection something different from `Subscribers`, you can change this (and update the data-hook function names in `Backend/data.js`. There's really no reason to name the database differently, so you can probably leave this one as is.|  
-|`MOLLIE_TEST_API_KEY` and `MOLLIE_LIVE_API_KEY`|Replace these for the test and live API keys you can find in your [Mollie account dashboard](https://www.mollie.com/dashboard/)|  
+|`MOLLIE_TEST_API_KEY` and `MOLLIE_LIVE_API_KEY`|Replace these for the test and live API keys you can find in your [Mollie account dashboard](https://www.mollie.com/dashboard/)|
+|`CURRENCY`|Set the currency (Euro, dollar, etc..) you want the user to pay in. Find the correct code and support for your currency [here](https://docs.mollie.com/guides/multicurrency)|
 |`FIRST_PAYMENT_AMOUNT`|Input the amount that will be charged for subscription activation. Has to be at least `0.01` (one cent), and personally I would leave it like that. It's foremost purpose is to get authorisation from the bank to periodically charge the user's account.|  
 |`SUBSCRIPTION_AMOUNT`|The amount that will be charged each interval for the subscription |  
 |`SUBSCRIPTION_INTERVAL`|How long the interval is between subscription payments. Can be `.. days`, `.. weeks` or `.. months` (but instead of `..`, put the amount of days, weeks, months you want, so for example: `2 weeks` for bi-weekly payments, or `1 month`) )  
