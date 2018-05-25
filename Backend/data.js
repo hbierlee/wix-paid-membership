@@ -39,6 +39,8 @@ export function Subscribers_beforeUpdate(item, context) {
         }
       })
       .catch(() => Promise.resolve(item)); // this means there's no subscription
+  } else {
+    return item;
   }
 }
 
