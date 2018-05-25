@@ -18,14 +18,14 @@ For funding, I approached Mollie and signed a partnership. I receive a percentag
 - Your clients can review their subscription status and unsubscribe themselves  
 - The user interface is in your hands entirely (so it doesn't have to look like my demo site at all, fortunately)  
   
-Are there some functionality missing that is preventing you from adding this project to your site? Let's open the discussion on the [Wix Code forum thread](https://www.wix.com/code/home/forum/show-off-your-work/paid-membership-2) or on [a GitHub feature request](https://github.com/hbierlee/wix-paid-membership/issues/new). If there's enough traction, I might add it to the project!  
+Are there some functionality missing that is preventing you from adding this project to your site? Let's open the discussion on the [Wix Code forum thread](https://www.wix.com/code/home/forum/show-off-your-work/paid-membership-2) or on [a GitHub feature request](https://github.com/mollie/wix-paid-membership/issues/new). If there's enough traction, I might add it to the project!  
   
 ## Implementation, updates, support and feedback  
 Unfortunately, installing this feature on your site is not a plug-and-play affair like any ordinary Wix App. This is why I wrote a tutorial that outlines the process step by step: if you carefully follow the tutorial without rush, it shouldn't take longer than 30-45 minutes, depending on your experience with Wix and Wix Code.  
   
 Another side-effect is that software updates to the project are not automatically installed. [Subscribe to my mailing list](http://eepurl.com/du7r9L) to keep track of project updates, such as new features or bug fixes. These will have to be installed manually again.  
   
-Feedback on this tutorial is highly appreciated, so that I can keep improving it for everyone. If you get stuck, it means something is not clear. In that case, please open a [support ticket](https://github.com/hbierlee/wix-paid-membership/issues/new).  
+Feedback on this tutorial is highly appreciated, so that I can keep improving it for everyone. If you get stuck, it means something is not clear. In that case, please open a [support ticket](https://github.com/mollie/wix-paid-membership/issues/new).  
   
 For a fee, I can also take care of the whole installation for you. Contact me at bierlee.henk+wix@gmail.com.  
   
@@ -33,7 +33,7 @@ For a fee, I can also take care of the whole installation for you. Contact me at
 If you've read this far, I assume you're ready to add the Paid Membership feature to your site (and if you skipped ahead to this point, I recommend going back and reading the whole thing so there are no disappointments). So open your site in the Wix Editor and let's get to it!  
   
 ### Download the source code locally  
-1. Download the source code: https://github.com/hbierlee/wix-paid-membership/archive/master.zip  
+1. Download the source code: https://github.com/mollie/wix-paid-membership/archive/master.zip  
 2. In your downloads folder, extract the downloaded zip file (`wix-paid-membership-master`)  
 3. In the extracted project there will be three subfolders with the source files that are important to us: `Backend`, `Pages` and `Public`. Make sure you can open these files somehow with a text editor. On Windows you can use Notepad for this, Mac comes with TextEdit. We're going to be copying them over to Wix Code. I'll refer to these files as the local source files/folders (since they're on your local machine).  
   
