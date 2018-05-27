@@ -34,6 +34,7 @@ function startServer (port = DEFAULT_PORT) {
       res.sendStatus(200)
     } catch (e) {
       console.error('error in tunneledServer in wixPaidMembershipFirstPayment', e)
+      rejectWebhook()
       res.sendStatus(500)
     }
   })
@@ -45,6 +46,7 @@ function startServer (port = DEFAULT_PORT) {
       res.sendStatus(200)
     } catch (e) {
       console.error('error in tunneledServer in wixPaidMembershipRecurringPayment', e)
+      rejectWebhook()
       res.sendStatus(500)
     }
   })
