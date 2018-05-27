@@ -43,7 +43,7 @@ If you've read this far, I assume you're ready to add the Paid Membership featur
 3. If you click the button in the editor, there should be a `Properties` pannel on your screen (if there's not, check that `Developer Tools -> Properties Panel` is enabled)  
 4. Set the ID of the button to `subscribeButton`. Below that in the properties panel, under `Events` select `onClick` and input: `subscribeButton_click` (as is probably already auto-filled).  
 5. The Wix Code Editor will open automatically (or click the bar in the bottom of the screen which says `[Pagename] Page Code`). Remove the default template code. Open the local source file called `Pages/Subscribe.js`, copy the whole content and paste it to the Wix Code Editor.  
-6. Check out the URL in the page settings panel (which you can open settings button next to the page in the file viewer), and then the `SEO (Google)` tab. If you named your site `Subscribe`, it's probably `subscribe`. We're going to need this page URL later.  
+6. Check out the URL in the page settings panel (which you can open settings button next to the page in the file viewer), and then the `SEO (Google)` tab. If you named your site `Subscribe`, it's `subscribe`. Whatever it is, we're going to need this page URL later.  
   
 ### Add the local source files (`Public/` and `Backend/`) to Wix Code  
   
@@ -67,7 +67,7 @@ We need to keep a list of subscribers, for which we're going to add a Subscriber
    - `Site member` for `..create content`  
    - `Site member author` for `..update content`  
    - `Admin` for `..delete content`  
-4. You now see the (still empty) database collection. In the collection menu, click `Hooks -> Add hooks`. There should be a list of options with checkboxes. The `Before Update` and `After Remove` options should have checkmarks already.  
+4. You now see the (still empty) database collection. In the collection menu, click `Hooks -> Add hooks`. There should be a list of options with checkboxes. The `Before Update` and `Before Remove` options should have checkmarks already.  
   
 #### Set the Subscribers database schema  
 A database has a fixed structure, also called a database schema. It's basically a list of exactly what fields are allowed to be saved in the database, and what type each field can be (`Text`, `Number`, `Date`, etc..). The fields are displayed in the table header, and the default is just one text field called `Title`. For our Subscribers database, we need to add 5 new fields (4 text type, 1 boolean type) to the schema. To do this, click the plus symbol (+) next to `Title` to add a new field. Then enter the name, key and field type. These last two have to match exactly with the table below!  
