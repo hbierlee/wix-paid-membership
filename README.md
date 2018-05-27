@@ -30,7 +30,15 @@ Feedback on this tutorial is highly appreciated, so that I can keep improving it
 For a fee, I can also take care of the whole installation for you. Contact me at bierlee.henk+wix@gmail.com.  
   
 ## Tutorial  
-If you've read this far, I assume you're ready to add the Paid Membership feature to your site (and if you skipped ahead to this point, I recommend going back and reading the whole thing so there are no disappointments). So open your site in the Wix Editor and let's get to it!  
+If you've read this far, I assume you're ready to add the Paid Membership feature to your site (and if you skipped ahead to this point, I recommend going back and reading the whole thing so there are no disappointments). So open your site in the Wix Editor and let's get to it!
+
+### Mollie account  
+The first thing we need to do is register a Mollie account. Mollie is a payment service provider, which means they provide the various payment methods so that your clients can use their favourite bank securely.  
+  
+1. Create your Mollie account [here](https://www.mollie.com)  
+2. In `Settings->Payment Methods`, enable one or more of your preferred payment methods that you want your customers to be able to use.
+    - The following methods are supported: `bancontact belfius creditcard ideal inghomepay kbc sofort`
+3. If you use any other payment method than `creditcard`, you must also enable the `SEPA direct debit` payment method
   
 ### Download the source code locally  
 1. Download the source code: https://github.com/mollie/wix-paid-membership/archive/master.zip  
@@ -108,14 +116,6 @@ Finally, at the bottom of the file, delete this default template code if it's th
 Of course, we want people to reach our Premium page. Since these pages are subpages of a router, Wix doesn't allow us to use the Page link option. Instead, use the Web address option and write the full URL of the Premium page, which is your site's URL followed by the URL prefix. For example: `https://www.mysite.com/premium`.  
   
 You can also add a link to your site's menu via the Wix Editor by clicking the top Wix Editor icon called `Menus & Pages -> Site Menu -> Add a Link (next to 'Add Page')`.  
-  
-### Mollie account  
-We're going to take a little break from Wix and register a Mollie account. Mollie is a payment service provider, which means they provide the various payment methods so that your clients can use their favourite bank securely.  
-  
-1. Create your Mollie account [here](https://www.mollie.com)  
-2. In `Settings->Payment Methods`, enable one or more of your preferred payment methods that you want your customers to be able to use.
-    - The following methods are supported: `bancontact belfius creditcard ideal inghomepay kbc sofort`
-3. If you use any other payment method than `creditcard`, you must also enable the `SEPA direct debit` payment method
   
 ### Configuration  
 The last step brings it all together: editing `config.js`. Open `Backend/config.js` with the Wix Code Editor. There will be lots of fields here with the default configuration. Some need to be changed to info specific to your site. The format of each configuration field is `export const FIELD_NAME = 'field-value';`. Where necessary, you need to replace the `field-value` part (but leave the quotes!).  
