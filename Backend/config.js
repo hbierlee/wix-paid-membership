@@ -2,6 +2,10 @@
 export const IS_PRODUCTION = false;  // toggle this to switch between production/development mode
 export const SITE_URL = 'https://bierleehenk.wixsite.com/henk-bierlee'; // your site URL
 
+// Don't have to touch this one
+// there is dev mode if you change this to _dev-functions, but note that wix-data then writes to the sandbox/test database!
+export const SITE_API_URL = `${SITE_URL}/_functions`;
+
 // database
 /*
   When creating the database collection to hold your subscribers, use Collection type: 'Custom use' and set the role permissions as follows:
@@ -33,9 +37,3 @@ export const PREMIUM_PAGE_TITLE = 'Premium Content';  // the sitemap display nam
 const SUBSCRIBE_PAGE_URL_NAME =  'subscribe';  // the URL of the page where users can subscribe
 export const SUBSCRIBE_PAGE_URL = `${SITE_URL}/${SUBSCRIBE_PAGE_URL_NAME}`;
 
-// redirect URLs and API enpoints
-const SITE_API_URL = `${SITE_URL}/_functions`; // there is dev mode if you change this to _dev-functions, but note that wix-data then writes to the sandbox/test database!
-
-// You don't have to touch these, except if you want to change/disable them for unit testing purposes.
-export const FIRST_PAYMENT_WEBHOOK = `${SITE_API_URL}/wixPaidMembershipFirstPayment`;
-export const RECURRING_PAYMENT_WEBHOOK = `${SITE_API_URL}/wixPaidMembershipRecurringPayment`;

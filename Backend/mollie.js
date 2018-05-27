@@ -4,9 +4,9 @@ import {
   CURRENCY,
   FIRST_PAYMENT_AMOUNT,
   FIRST_PAYMENT_DESCRIPTION,
-  FIRST_PAYMENT_WEBHOOK,
   MOLLIE_API_KEY,
-  PREMIUM_PAGE_ROUTER_PREFIX, RECURRING_PAYMENT_WEBHOOK,
+  PREMIUM_PAGE_ROUTER_PREFIX,
+  SITE_API_URL,
   SITE_URL,
   SUBSCRIPTION_AMOUNT,
   SUBSCRIPTION_DESCRIPTION,
@@ -59,7 +59,7 @@ export async function createFirstMolliePayment(customerId) {
     description: FIRST_PAYMENT_DESCRIPTION,
     redirectUrl: `${SITE_URL}/${PREMIUM_PAGE_ROUTER_PREFIX}`,
     sequenceType: 'first',
-    webhookUrl: FIRST_PAYMENT_WEBHOOK,
+    webhookUrl: `${SITE_API_URL}/wixPaidMembershipFirstPayment`,
   });
 }
 
@@ -75,7 +75,7 @@ export async function createMollieSubscription(customerId) {
     },
     interval: SUBSCRIPTION_INTERVAL,
     description: SUBSCRIPTION_DESCRIPTION,
-    webhookUrl: RECURRING_PAYMENT_WEBHOOK,
+    webhookUrl: `${SITE_API_URL}/wixPaidMembershipRecurringPayment`,
   });
 }
 

@@ -62,7 +62,6 @@ export async function callTunneledServer(endpoint, paymentId) {
 export async function createTunneledServer(port = DEFAULT_PORT) {
   await startServer(port);
   TUNNELED_SERVER_URL = await ngrok.connect(port);
-  config['FIRST_PAYMENT_WEBHOOK'] = `${TUNNELED_SERVER_URL}/wixPaidMembershipFirstPayment`;
-  config['RECURRING_PAYMENT_WEBHOOK'] = `${TUNNELED_SERVER_URL}/wixPaidMembershipRecurringPayment`;
+  config['SITE_API_URL'] = TUNNELED_SERVER_URL;
   return TUNNELED_SERVER_URL;
 }
