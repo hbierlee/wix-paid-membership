@@ -96,7 +96,8 @@ The Premium page is the page that is accessible only to paying members.
 1. In the Pages folder in the Wix Code Editor, click the plus symbol and select: `Add a router`  
 2. Set the URL prefix to whatever you like, like `premium`. This will be the end of the URL where your premium page resides, so: `https://www.mysite.com/premium`.  
    - Note: if you use `premium` as URL prefix, you can skip step 4  
-3. In the Pages folder, there will be a subfolder called `Premium Pages` with one page called `premium-page` (or something similar, depending on what URL prefix you chose). You can add your premium content here.  
+3. In the Pages folder, there will be a subfolder called `Premium Pages` with one page called `premium-page` (or something similar, depending on what URL prefix you chose). You can add your premium content here.
+   - If you already have a premium page ready on Wix, there's no way to move it to the router sub-folder (as far as I know). However, you can select all the elements on the old page by Ctrl/cmd clicking on them, copy them by pressing Ctrl/cmd+C and paste on the new page by pressing Ctrl/cmd+C.  
 4. If you choose a different name than `premium` for your URL prefix, w need to make some small code changes. Open the `Backend/routers.js` file with the Wix Code editor. In the two lines that say:  
    - `export  async  function premium_router(request) {`  
    - `export  async  function premium_sitemap() {`  
