@@ -1,20 +1,19 @@
 module.exports = {
-  ok() {
-    return 'ok ' + arguments;
+  ok () {
+    return 'ok ' + arguments
   },
-  redirect() {
-    return 'redirect ' + arguments;
+  redirect () {
+    return 'redirect ' + arguments
   },
-  sendStatus() {
-    return 'send status ' + arguments;
+  sendStatus () {
+    return 'send status ' + arguments
   },
-  forbidden() {
-    return 'forbidden ' + arguments;
+  forbidden () {
+    return 'forbidden ' + arguments
   },
   WixRouterSitemapEntry: class {
-    
-    constructor(key) {
-      this.key = key;
+    constructor (key) {
+      this.key = key
     }
   }
-};
+}

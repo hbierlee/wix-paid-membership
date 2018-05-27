@@ -1,35 +1,35 @@
-import {ok, redirect, WixRouterSitemapEntry} from 'wix-router';
-import {PREMIUM_PAGE_KEY, PREMIUM_PAGE_ROUTER_PREFIX, PREMIUM_PAGE_TITLE, SUBSCRIBE_PAGE_URL} from './config';
-import {getSubscriberByUserId} from './database';
+import {ok, redirect, WixRouterSitemapEntry} from 'wix-router'
+import {PREMIUM_PAGE_KEY, PREMIUM_PAGE_ROUTER_PREFIX, PREMIUM_PAGE_TITLE, SUBSCRIBE_PAGE_URL} from './config'
+import {getSubscriberByUserId} from './database'
 
-export async function premium_router(request) {
+export async function premium_router (request) {
   try {
     if (await hasPremiumAccess(request.user)) {
-      return ok(PREMIUM_PAGE_KEY);
+      return ok(PREMIUM_PAGE_KEY)
     } else {
-      return redirect(SUBSCRIBE_PAGE_URL);
+      return redirect(SUBSCRIBE_PAGE_URL)
     }
   } catch (e) {
-    console.error('error in router', e);
-    return redirect(SUBSCRIBE_PAGE_URL);
+    console.error('error in router', e)
+    return redirect(SUBSCRIBE_PAGE_URL)
   }
 }
 
-async function hasPremiumAccess({id, role}) {
+async function hasPremiumAccess ({id, role}) {
   if (role === 'Admin' || role === 'siteAdmin' || role === 'siteOwner') {
-    return true;
+    return true
   } else if (role === 'Member' || role === 'siteMember') { // role naming seems to be different ('siteMember') when routing for some reason
-    const subscriber = await getSubscriberByUserId(id);
-    return subscriber && subscriber.hasActiveSubscription;
+    const subscriber = await getSubscriberByUserId(id)
+    return subscriber && subscriber.hasActiveSubscription
   } else {
-    return false;
+    return false
   }
 }
 
-export async function premium_sitemap() {
-  const premiumPageSitemapEntry = new WixRouterSitemapEntry(PREMIUM_PAGE_KEY);
-  premiumPageSitemapEntry.pageName = PREMIUM_PAGE_TITLE;
-  premiumPageSitemapEntry.url = `/${PREMIUM_PAGE_ROUTER_PREFIX}`;
-  premiumPageSitemapEntry.title = PREMIUM_PAGE_TITLE;
-  return [premiumPageSitemapEntry];
+export async function premium_sitemap () {
+  const premiumPageSitemapEntry = new WixRouterSitemapEntry(PREMIUM_PAGE_KEY)
+  premiumPageSitemapEntry.pageName = PREMIUM_PAGE_TITLE
+  premiumPageSitemapEntry.url = `/${PREMIUM_PAGE_ROUTER_PREFIX}`
+  premiumPageSitemapEntry.title = PREMIUM_PAGE_TITLE
+  return [premiumPageSitemapEntry]
 }

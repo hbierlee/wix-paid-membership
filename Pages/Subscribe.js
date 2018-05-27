@@ -1,5 +1,5 @@
-import {onSubscribe} from 'public/eventHandlers.js';
+import {onSubscribe} from 'public/eventHandlers.js'
 
-export function subscribeButton_click() {
-  onSubscribe();
+export function subscribeButton_click () {
+  onSubscribe()
 }

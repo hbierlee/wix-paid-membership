@@ -1,1 +1,1 @@
-module.exports = {fetch: require('node-fetch')};
+module.exports = {fetch: require('node-fetch')}

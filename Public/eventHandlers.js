@@ -1,29 +1,29 @@
-import wixUsers from 'wix-users';
-import wixLocation from 'wix-location';
+import wixUsers from 'wix-users'
+import wixLocation from 'wix-location'
 
-import {subscribe, unsubscribe} from 'backend/subscribe';
+import {subscribe, unsubscribe} from 'backend/subscribe'
 
 // TODO rendering optimization needed?? https://support.wix.com/en/article/how-to-create-member-profile-pages-with-wix-code
-export async function onSubscribe() {
+export async function onSubscribe () {
   if (!wixUsers.currentUser.loggedIn) {
-    await wixUsers.promptLogin({mode: 'login'});
+    await wixUsers.promptLogin({mode: 'login'})
   }
 
-  const {currentUser} = wixUsers;
-  const userEmail = await currentUser.getEmail();
-  const {paymentUrl} = await subscribe(currentUser.id, userEmail);
-  return wixLocation.to(paymentUrl);
+  const {currentUser} = wixUsers
+  const userEmail = await currentUser.getEmail()
+  const {paymentUrl} = await subscribe(currentUser.id, userEmail)
+  return wixLocation.to(paymentUrl)
 }
 
-export async function onUnsubscribe() {
+export async function onUnsubscribe () {
   try {
-    await unsubscribe(wixUsers.currentUser.id);
+    await unsubscribe(wixUsers.currentUser.id)
   } catch (e) {
-    console.log('Error in unsubscribe', e);
+    console.log('Error in unsubscribe', e)
   }
-  refresh();
+  refresh()
 }
 
-function refresh() {
-  return wixLocation.to(wixLocation.url);
+function refresh () {
+  return wixLocation.to(wixLocation.url)
 }
