@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "standard && echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +20,7 @@
     "ngrok": "^3.0.1",
     "opn": "^5.3.0",
     "prompt": "^1.0.0",
+    "standard": "^11.0.1",
     "wix-data": "file:./mocks/wix-data",
     "wix-fetch": "file:./mocks/wix-fetch",
     "wix-http-functions": "file:./mocks/wix-http-functions",
