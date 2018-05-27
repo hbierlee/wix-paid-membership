@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions,no-undef */
 import chai from 'chai'
 import {db} from 'wix-data'
 
@@ -6,6 +7,7 @@ import {createTunneledServer, waitForWebhookToBeCalled} from './tunneledServer'
 import {hasActiveSubscription, subscribe, unsubscribe} from '../Backend/subscribe'
 import {cancelMollieSubscription, getMollieCustomer, mollieApiWrapper} from '../Backend/mollie'
 import {remove} from '../mocks/wix-data'
+// eslint-disable-next-line camelcase
 import {post_wixPaidMembershipRecurringPayment} from '../Backend/http-functions'
 import {WixHttpFunctionRequest} from '../mocks/wix-http-functions'
 

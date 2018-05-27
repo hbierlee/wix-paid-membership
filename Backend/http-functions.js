@@ -20,6 +20,7 @@ const response = {
 }
 
 // helper function for adding debug logs
+// eslint-disable-next-line no-unused-vars
 function log () {
   if (!IS_PRODUCTION) {
     response.body.log.push(Object.values(arguments))
@@ -39,12 +40,14 @@ async function apiWrapper (request, handler) {
 }
 
 // API endpoints
+// eslint-disable-next-line camelcase
 export async function post_wixPaidMembershipFirstPayment (request) {
-  return await apiWrapper(request, handleFirstPayment)
+  return apiWrapper(request, handleFirstPayment)
 }
 
+// eslint-disable-next-line camelcase
 export async function post_wixPaidMembershipRecurringPayment (request) {
-  return await apiWrapper(request, handleRecurringPayment)
+  return apiWrapper(request, handleRecurringPayment)
 }
 
 // helpers and handlers

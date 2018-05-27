@@ -6,7 +6,7 @@ async function createSubscriberAndMollieCustomer (userId, email) {
   const customer = await createMollieCustomer(userId, email, subscriber._id) // TODO could improve this name to be firstName + lastName if present
 
   subscriber.mollieCustomerId = customer.id
-  return await updateSubscriber(subscriber)
+  return updateSubscriber(subscriber)
 }
 
 export async function subscribe (userId, email) {

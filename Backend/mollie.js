@@ -42,15 +42,15 @@ export async function mollieApiWrapper (path, method, data) {
 }
 
 export async function createMollieCustomer (name, email, wixSubscriberId) {
-  return await mollieApiWrapper('customers', 'POST', {name, email, metadata: JSON.stringify({wixSubscriberId})})
+  return mollieApiWrapper('customers', 'POST', {name, email, metadata: JSON.stringify({wixSubscriberId})})
 }
 
 export async function getMollieCustomer (customerId) {
-  return await mollieApiWrapper(`customers/${customerId}`, 'GET')
+  return mollieApiWrapper(`customers/${customerId}`, 'GET')
 }
 
 export async function createFirstMolliePayment (customerId) {
-  return await mollieApiWrapper('payments', 'POST', {
+  return mollieApiWrapper('payments', 'POST', {
     customerId,
     amount: {
       value: FIRST_PAYMENT_AMOUNT,
@@ -64,11 +64,11 @@ export async function createFirstMolliePayment (customerId) {
 }
 
 export async function getMollieMandates (customerId) {
-  return await mollieApiWrapper(`customers/${customerId}/mandates`, 'GET')
+  return mollieApiWrapper(`customers/${customerId}/mandates`, 'GET')
 }
 
 export async function createMollieSubscription (customerId) {
-  return await mollieApiWrapper(`customers/${customerId}/subscriptions`, 'POST', {
+  return mollieApiWrapper(`customers/${customerId}/subscriptions`, 'POST', {
     amount: {
       value: SUBSCRIPTION_AMOUNT,
       currency: CURRENCY
@@ -80,13 +80,13 @@ export async function createMollieSubscription (customerId) {
 }
 
 export async function getMollieSubscription (customerId, subscriptionId) {
-  return await mollieApiWrapper(`customers/${customerId}/subscriptions/${subscriptionId}`, 'GET')
+  return mollieApiWrapper(`customers/${customerId}/subscriptions/${subscriptionId}`, 'GET')
 }
 
 export async function cancelMollieSubscription (customerId, subscriptionId) {
-  return await mollieApiWrapper(`customers/${customerId}/subscriptions/${subscriptionId}`, 'DELETE')
+  return mollieApiWrapper(`customers/${customerId}/subscriptions/${subscriptionId}`, 'DELETE')
 }
 
 export async function getMolliePayment (paymentId) {
-  return await mollieApiWrapper(`payments/${paymentId}`, 'GET')
+  return mollieApiWrapper(`payments/${paymentId}`, 'GET')
 }

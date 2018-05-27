@@ -1,4 +1,5 @@
 import {fetch} from 'wix-fetch'
+// eslint-disable-next-line camelcase
 import {post_wixPaidMembershipFirstPayment, post_wixPaidMembershipRecurringPayment} from '../Backend/http-functions'
 import express from 'express'
 import bodyParser from 'body-parser'
@@ -53,7 +54,7 @@ function startServer (port = DEFAULT_PORT) {
 
 // TODO doesn't work somehow, might fix in the future
 export async function callTunneledServer (endpoint, paymentId) {
-  return TUNNELED_SERVER_URL && await fetch(`${TUNNELED_SERVER_URL}/${endpoint}`, {
+  return TUNNELED_SERVER_URL && fetch(`${TUNNELED_SERVER_URL}/${endpoint}`, {
     method: 'POST',
     body: JSON.stringify(paymentId)
   })

@@ -5,15 +5,16 @@ import {
 
 const log = []
 
+// eslint-disable-next-line no-unused-vars
 function print (statement) {
   log.push(statement)
 }
 
 function reject (reason) {
-  return Promise.reject({
+  return Promise.reject(new Error(JSON.stringify({
     reason,
     log
-  })
+  })))
 }
 
 function shouldDeleteSubscription (newItem, oldItem) {
@@ -25,6 +26,7 @@ function shouldDeleteSubscription (newItem, oldItem) {
   )
 }
 
+// eslint-disable-next-line camelcase,no-unused-vars
 export function Subscribers_beforeUpdate (item, context) {
   const {
     currentItem
@@ -44,6 +46,7 @@ export function Subscribers_beforeUpdate (item, context) {
   }
 }
 
+// eslint-disable-next-line camelcase,no-unused-vars
 export function Subscribers_beforeRemove (itemId, context) {
   const {
     currentItem: {

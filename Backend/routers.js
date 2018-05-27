@@ -2,6 +2,7 @@ import {ok, redirect, WixRouterSitemapEntry} from 'wix-router'
 import {PREMIUM_PAGE_KEY, PREMIUM_PAGE_ROUTER_PREFIX, PREMIUM_PAGE_TITLE, SUBSCRIBE_PAGE_URL} from './config'
 import {getSubscriberByUserId} from './database'
 
+// eslint-disable-next-line camelcase
 export async function premium_router (request) {
   try {
     if (await hasPremiumAccess(request.user)) {
@@ -26,6 +27,7 @@ async function hasPremiumAccess ({id, role}) {
   }
 }
 
+// eslint-disable-next-line camelcase
 export async function premium_sitemap () {
   const premiumPageSitemapEntry = new WixRouterSitemapEntry(PREMIUM_PAGE_KEY)
   premiumPageSitemapEntry.pageName = PREMIUM_PAGE_TITLE

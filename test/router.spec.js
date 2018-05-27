@@ -1,4 +1,6 @@
+/* eslint-disable no-undef */
 import chai from 'chai'
+// eslint-disable-next-line camelcase
 import {premium_sitemap} from '../Backend/routers'
 
 describe('sitemap', function () {
