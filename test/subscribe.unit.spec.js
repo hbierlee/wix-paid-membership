@@ -17,7 +17,6 @@ const {remove} = mock.reRequire('../mocks/wix-data')
 const {WixHttpFunctionRequest} = mock.reRequire('../mocks/wix-http-functions')
 
 describe('subscriptions (unit test, with mocked mollie API)', function () {
-
   it(testSubscribeAndResubscribeName, async function () {
     await testSubscribeAndResubscribe()
   })
