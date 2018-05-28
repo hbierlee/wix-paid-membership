@@ -7,6 +7,7 @@ import {post_wixPaidMembershipRecurringPayment} from '../Backend/http-functions'
 import {subscribe} from '../Backend/subscribe'
 import opn from 'opn'
 import {mollieApiWrapper} from '../Backend/mollie'
+import {WixHttpFunctionRequest} from '../mocks/wix-http-functions'
 
 describe('subscriptions (integration test, with Mollie test API)', function () {
   const userId = 'someMemberUserId'
