@@ -19,6 +19,7 @@ describe('subscriptions (integration test, with Mollie test API)', function () {
   })
 
   it(testSubscribeAndResubscribeName, async function () {
+    this.timeout(0)
     await testSubscribeAndResubscribe()
   })
 
@@ -26,6 +27,7 @@ describe('subscriptions (integration test, with Mollie test API)', function () {
      * This test case might take 5-15 minutes
      */
   it(recurringPaymentTestName, async function () {
+    this.timeout(0)
     await testRecurringPayment()
   })
 })
