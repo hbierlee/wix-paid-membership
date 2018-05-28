@@ -4,7 +4,9 @@ import chai from 'chai'
 import {subscribe, unsubscribe, hasActiveSubscription} from '../Backend/subscribe'
 import {waitForWebhookToBeCalled} from './tunneledServer'
 import opn from 'opn'
-import {cancelMollieSubscription, getMollieCustomer} from '../Backend/mollie'
+import {cancelMollieSubscription, getMollieCustomer, mollieApiWrapper} from '../Backend/mollie'
+import {WixHttpFunctionRequest} from '../mocks/wix-http-functions'
+import {post_wixPaidMembershipRecurringPayment} from '../Backend/http-functions' // eslint-disable-line camelcase
 
 const userId = 'someMemberUserId'
 const email = 'someMemberEmail@email.com'
@@ -86,4 +88,34 @@ async function checkSubscriberWithMollieCustomer (subscriber, subscribeResult) {
 async function expectSubscriptionStatusToEqual (expectedStatus) {
   const subscriptionStatus = !!(await hasActiveSubscription(userId))
   chai.expect(subscriptionStatus).to.equal(expectedStatus)
+}
+
+export const recurringPaymentTestName = 'should handle recurring payment requests';
+export async function testRecurringPayment () {
+  const {paymentUrl, mollieCustomerId} = await subscribe(userId, email)
+  console.log('accept the first payment by selecting status \'paid\' at the following URL: ' + paymentUrl)
+  opn(paymentUrl)
+  await waitForWebhookToBeCalled()
+  const firstSubscriptionPayment = await waitForFirstSubscriptionPayment(mollieCustomerId)
+  await post_wixPaidMembershipRecurringPayment(new WixHttpFunctionRequest(firstSubscriptionPayment.id))
+
+  chai.expect(db[0].hasActiveSubscription).to.be.true // eslint-disable-line no-unused-expressions
+}
+
+async function waitForFirstSubscriptionPayment (customerId) {
+  return new Promise((resolve, reject) => {
+    const interval = setInterval(async () => {
+      try {
+        console.log('checking')
+        const {_embedded: {payments}, count} = await mollieApiWrapper(`customers/${customerId}/payments`, 'GET')
+
+        if (count === 2) {
+          resolve(payments[0]) // resolve with the most recent payment
+          clearInterval(interval)
+        }
+      } catch (e) {
+        reject(e)
+      }
+    }, 10000)
+  })
 }
