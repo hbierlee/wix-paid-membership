@@ -11,7 +11,7 @@ import {post_wixPaidMembershipRecurringPayment} from '../Backend/http-functions'
 const userId = 'someMemberUserId'
 const email = 'someMemberEmail@email.com'
 
-export const testSubscribeAndResubscribeName = 'should create a subscriber in the database and a customer on the Mollie platform, and return a payment with paymentUrl and paymentId'
+export const subscribeAndResubscribeTestName = 'should create a subscriber in the database and a customer on the Mollie platform, and return a payment with paymentUrl and paymentId'
 
 export async function testSubscribeAndResubscribe () {
   await expectSubscriptionStatusToEqual(false)
@@ -102,6 +102,7 @@ export async function testRecurringPayment () {
   chai.expect(db[0].hasActiveSubscription).to.be.true // eslint-disable-line no-unused-expressions
 }
 
+export const failingRecurringPaymentTestName = 'should unsubscribe user if subscription is not active when a recurring payment arrives'
 export async function testFailingRecurringPayment () {
   const {paymentUrl, mollieCustomerId, paymentId} = await subscribe(userId, email)
   opn(paymentUrl)

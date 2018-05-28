@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions,no-undef,import/first */
 import mock from 'mock-require'
 import {remove} from '../mocks/wix-data/'
+import {failingRecurringPaymentTestName} from './subscribeTests'
 
 mock('../Backend/mollie', '../mocks/mollie/mollie')
 mock('opn', () => { console.log('skip opn in mocked test') })
@@ -26,7 +27,7 @@ describe('subscriptions (unit test, with mocked mollie API)', function () {
     return testRecurringPayment()
   })
 
-  it('should unsubscribe user if recurring payment fails', async function () {
+  it(failingRecurringPaymentTestName, async function () {
     await testFailingRecurringPayment()
   })
 

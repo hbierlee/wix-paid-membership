@@ -3,7 +3,7 @@ import {
   recurringPaymentTestName,
   testRecurringPayment,
   testSubscribeAndResubscribe,
-  testSubscribeAndResubscribeName
+  subscribeAndResubscribeTestName, failingRecurringPaymentTestName, testFailingRecurringPayment
 } from './subscribeTests'
 import {remove} from 'wix-data'
 import {createTunneledServer} from './tunneledServer'
@@ -17,7 +17,7 @@ describe('subscriptions (integration test, with Mollie test API)', function () {
     await createTunneledServer()
   })
 
-  it(testSubscribeAndResubscribeName, async function () {
+  it(subscribeAndResubscribeTestName, async function () {
     this.timeout(0)
     await testSubscribeAndResubscribe()
   })
@@ -28,5 +28,10 @@ describe('subscriptions (integration test, with Mollie test API)', function () {
   it(recurringPaymentTestName, async function () {
     this.timeout(0)
     await testRecurringPayment()
+  })
+
+  it(failingRecurringPaymentTestName, async function () {
+    this.timeout(0)
+    await testFailingRecurringPayment()
   })
 })
