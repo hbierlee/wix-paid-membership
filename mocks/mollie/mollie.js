@@ -51,3 +51,9 @@ export async function getMolliePayment (paymentId) {
   console.log('mock getMolliePayment')
   return payments.find(p => p.id === paymentId)
 }
+
+export async function listMolliePayments (customerId) {
+  console.log('mock listMolliePayments')
+  const paymentsForCustomer = payments.filter(p => p.customerId === customerId)
+  return {_embedded: {payments: paymentsForCustomer}, count: paymentsForCustomer.length}
+}
