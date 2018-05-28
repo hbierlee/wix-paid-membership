@@ -28,6 +28,6 @@ export async function hasActiveSubscription (userId) {
 export async function unsubscribe (userId) {
   const subscriber = await getSubscriberByUserId(userId)
   if (subscriber) {
-    await cancelSubscription(userId) // database hook takes care of DELETE call to cancel Mollie subscription
+    await cancelSubscription(subscriber._id) // database hook takes care of DELETE call to cancel Mollie subscription
   }
 }
