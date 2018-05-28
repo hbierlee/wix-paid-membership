@@ -3,13 +3,12 @@ import {
   recurringPaymentTestName,
   testRecurringPayment,
   testSubscribeAndResubscribe,
-  testSubscribeAndResubscribeName,
+  testSubscribeAndResubscribeName
 } from './subscribeTests'
 import {remove} from 'wix-data'
 import {createTunneledServer} from './tunneledServer'
 
 describe('subscriptions (integration test, with Mollie test API)', function () {
-
   afterEach(function () {
     remove() // clear db
   })

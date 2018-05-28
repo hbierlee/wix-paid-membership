@@ -6,6 +6,16 @@ let customerIdCounter = 0
 let paymentIdCounter = 0
 let subscriptionIdCounter = 0
 
+export function resetMockedMollieDb () {
+  customers.length = 0
+  payments.length = 0
+  subscriptions.length = 0
+
+  customerIdCounter = 0
+  paymentIdCounter = 0
+  subscriptionIdCounter = 0
+}
+
 export async function createMollieCustomer (name, email, wixSubscriberId) {
   console.log('mock createMollieCustomer')
   const customer = {name, email, metadata: JSON.stringify({wixSubscriberId}), id: `customer_${customerIdCounter++}`}
@@ -32,8 +42,13 @@ export async function getMollieMandates (customerId) {
 
 export async function createMollieSubscription (customerId) {
   console.log('mock createMollieSubscription')
-  const subscription = {customerId, status: 'active', id: `subscription_${subscriptionIdCounter++}`}
+  const subscriptionId = `subscription_${subscriptionIdCounter++}`
+  const subscription = {customerId, status: 'active', id: subscriptionId}
   subscriptions.push(subscription)
+
+  const subscriptionPayment = {customerId, id: `payment_${paymentIdCounter++}`, _links: {checkout: {href: 'checkout_href'}}, status: 'paid', subscriptionId}
+  payments.push(subscriptionPayment)
+
   return subscription
 }
 
@@ -44,7 +59,10 @@ export async function getMollieSubscription (customerId, subscriptionId) {
 
 export async function cancelMollieSubscription (customerId, subscriptionId) {
   console.log('mock cancelMollieSubscription')
-  delete subscriptions[subscriptions.indexOf(s => s.id === subscriptionId)]
+  const subscription = subscriptions.find(s => s.customerId === customerId && s.id === subscriptionId)
+  if (subscription) {
+    subscription.status = 'canceled'
+  }
 }
 
 export async function getMolliePayment (paymentId) {
