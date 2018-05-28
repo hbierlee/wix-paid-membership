@@ -1,9 +1,11 @@
 /* eslint-disable no-undef,camelcase */
 import {
+  failingRecurringPaymentTestName,
   recurringPaymentTestName,
+  subscribeAndResubscribeTestName,
+  testFailingRecurringPayment,
   testRecurringPayment,
-  testSubscribeAndResubscribe,
-  subscribeAndResubscribeTestName, failingRecurringPaymentTestName, testFailingRecurringPayment
+  testSubscribeAndResubscribe
 } from './subscribeTests'
 import {remove} from 'wix-data'
 import {createTunneledServer} from './tunneledServer'

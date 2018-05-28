@@ -15,11 +15,11 @@ mock('./tunneledServer', {
 
 const {resetMockedMollieDb} = mock.reRequire('../mocks/mollie/mollie')
 const {post_wixPaidMembershipFirstPayment} = mock.reRequire('../Backend/http-functions') // eslint-disable-line camelcase
-const {testSubscribeAndResubscribe, testSubscribeAndResubscribeName, recurringPaymentTestName, testRecurringPayment, testFailingRecurringPayment} = mock.reRequire('./subscribeTests')
+const {testSubscribeAndResubscribe, subscribeAndResubscribeTestName, recurringPaymentTestName, testRecurringPayment, testFailingRecurringPayment} = mock.reRequire('./subscribeTests')
 const {WixHttpFunctionRequest} = mock.reRequire('../mocks/wix-http-functions')
 
 describe('subscriptions (unit test, with mocked mollie API)', function () {
-  it(testSubscribeAndResubscribeName, async function () {
+  it(subscribeAndResubscribeTestName, async function () {
     return testSubscribeAndResubscribe()
   })
 
