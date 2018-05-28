@@ -1,29 +1,87 @@
-/* eslint-disable no-unused-expressions,no-undef */
-import chai from 'chai'
-import {db} from 'wix-data'
+/* eslint-disable no-unused-expressions,no-undef,import/first */
+import mock from 'mock-require'
+const WITH_MOCK = false
 
-import opn from 'opn'
-import {createTunneledServer, waitForWebhookToBeCalled} from './tunneledServer'
-import {hasActiveSubscription, subscribe, unsubscribe} from '../Backend/subscribe'
-import {cancelMollieSubscription, getMollieCustomer, mollieApiWrapper} from '../Backend/mollie'
-import {remove} from '../mocks/wix-data'
-// eslint-disable-next-line camelcase
-import {post_wixPaidMembershipRecurringPayment} from '../Backend/http-functions'
-import {WixHttpFunctionRequest} from '../mocks/wix-http-functions'
+if (WITH_MOCK) {
+  mock('../Backend/mollie', '../mocks/mollie/mollie')
+  mock('opn', () => { console.log('skip opn in mocked test') })
+  mock('./tunneledServer', {
+    createTunneledServer: () => {},
+    waitForWebhookToBeCalled: async (paymentId) => {
+      console.log('call webhook via mock')
+      await post_wixPaidMembershipFirstPayment(new WixHttpFunctionRequest(paymentId))
+    }
+  })
+}
+
+const chai = mock.reRequire('chai')
+const {post_wixPaidMembershipFirstPayment} = mock.reRequire('../Backend/http-functions') // eslint-disable-line camelcase
+import {db} from 'wix-data'
+const opn = mock.reRequire('opn')
+const {createTunneledServer, waitForWebhookToBeCalled} = mock.reRequire('./tunneledServer')
+const {hasActiveSubscription, subscribe, unsubscribe} = mock.reRequire('../Backend/subscribe')
+const {cancelMollieSubscription, getMollieCustomer, mollieApiWrapper} = mock.reRequire('../Backend/mollie')
+const {remove} = mock.reRequire('../mocks/wix-data')
+const {post_wixPaidMembershipRecurringPayment} = mock.reRequire('../Backend/http-functions') // eslint-disable-line camelcase
+const {WixHttpFunctionRequest} = mock.reRequire('../mocks/wix-http-functions')
 
 describe('subscriptions', function () {
   const userId = 'someMemberUserId'
   const email = 'someMemberEmail@email.com'
 
-  before(async function () {
-    await createTunneledServer()
+  describe('subscriptions with mollie mocked (unit test)', function () {
+    it('should create a subscriber in the database and a customer on the Mollie platform, and return a payment with paymentUrl and paymentId', async function () {
+      await testSubscribeAndResubscribe()
+    })
   })
 
   afterEach(function () {
     remove() // clear db
   })
 
-  it('should create a subscriber in the database and a customer on the Mollie platform, and return a payment with paymentUrl and paymentId', async function () {
+  describe('subscriptions with Mollie API (integration test)', function () {
+    before(async function () {
+      await createTunneledServer()
+    })
+
+    it('should create a subscriber in the database and a customer on the Mollie platform, and return a payment with paymentUrl and paymentId', async function () {
+      await testSubscribeAndResubscribe()
+    })
+
+    async function waitForFirstSubscriptionPayment (customerId) {
+      return new Promise((resolve, reject) => {
+        const interval = setInterval(async () => {
+          try {
+            console.log('checking')
+            const {_embedded: {payments}, count} = await mollieApiWrapper(`customers/${customerId}/payments`, 'GET')
+
+            if (count === 2) {
+              resolve(payments[0]) // resolve with the most recent payment
+              clearInterval(interval)
+            }
+          } catch (e) {
+            reject(e)
+          }
+        }, 10000)
+      })
+    }
+
+    /**
+     * This test case might take 5-15 minutes
+     */
+    it('should handle recurring payment requests', async function () {
+      const {paymentUrl, mollieCustomerId} = await subscribe(userId, email)
+      console.log('accept the first payment by selecting status \'paid\' at the following URL: ' + paymentUrl)
+      opn(paymentUrl)
+      await waitForWebhookToBeCalled()
+      const firstSubscriptionPayment = await waitForFirstSubscriptionPayment(mollieCustomerId)
+      await post_wixPaidMembershipRecurringPayment(new WixHttpFunctionRequest(firstSubscriptionPayment.id))
+
+      chai.expect(db[0].hasActiveSubscription).to.be.true
+    })
+  })
+
+  async function testSubscribeAndResubscribe () {
     await expectSubscriptionStatusToEqual(false)
     const firstSubscribeResult = await subscribe(userId, email)
     await expectSubscriptionStatusToEqual(false)
@@ -41,7 +99,7 @@ describe('subscriptions', function () {
 
     console.log('accept the first payment by selecting status \'paid\' at the following URL: ' + firstSubscribeResult.paymentUrl)
     opn(firstSubscribeResult.paymentUrl)
-    await waitForWebhookToBeCalled()
+    await waitForWebhookToBeCalled(firstSubscribeResult.paymentId)
 
     const firstSubscriptionId = db[0].mollieSubscriptionId
     chai.expect(firstSubscriptionId).to.be.a('string')
@@ -70,43 +128,11 @@ describe('subscriptions', function () {
 
     console.log('resubscribe case: accept the first payment by selecting status \'paid\' at the following URL: ' + resubscribeResult.paymentUrl)
     opn(resubscribeResult.paymentUrl)
-    await waitForWebhookToBeCalled()
+    await waitForWebhookToBeCalled(resubscribeResult.paymentId)
     await expectSubscriptionStatusToEqual(true)
     chai.expect(db[0].mollieSubscriptionId).to.be.an('string')
     chai.expect(db[0].mollieSubscriptionId).to.not.equal(firstSubscriptionId) // expect this to be updated
-  })
-
-  async function waitForFirstSubscriptionPayment (customerId) {
-    return new Promise((resolve, reject) => {
-      const interval = setInterval(async () => {
-        try {
-          console.log('checking')
-          const {_embedded: {payments}, count} = await mollieApiWrapper(`customers/${customerId}/payments`, 'GET')
-
-          if (count === 2) {
-            resolve(payments[0]) // resolve with the most recent payment
-            clearInterval(interval)
-          }
-        } catch (e) {
-          reject(e)
-        }
-      }, 10000)
-    })
   }
-
-  /**
-   * This test case might take 5-15 minutes
-   */
-  it('should handle recurring payment requests', async function () {
-    const {paymentUrl, mollieCustomerId} = await subscribe(userId, email)
-    console.log('accept the first payment by selecting status \'paid\' at the following URL: ' + paymentUrl)
-    opn(paymentUrl)
-    await waitForWebhookToBeCalled()
-    const firstSubscriptionPayment = await waitForFirstSubscriptionPayment(mollieCustomerId)
-    await post_wixPaidMembershipRecurringPayment(new WixHttpFunctionRequest(firstSubscriptionPayment.id))
-
-    chai.expect(db[0].hasActiveSubscription).to.be.true
-  })
 
   async function checkSubscriberWithMollieCustomer (subscriber, subscribeResult) {
     // verify payment result
