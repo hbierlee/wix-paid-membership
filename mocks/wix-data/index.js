@@ -1,3 +1,5 @@
+let idCounter = 0
+
 module.exports = {
   db: [],
   testSubscriber: {
@@ -28,7 +30,7 @@ module.exports = {
   },
   insert (_, item) {
     console.log('insert', arguments)
-    item._id = `id-${module.exports.db.length}`
+    item._id = `id_${idCounter++}`
     module.exports.db.push(item)
     return item
   },
