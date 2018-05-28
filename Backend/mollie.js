@@ -90,3 +90,7 @@ export async function cancelMollieSubscription (customerId, subscriptionId) {
 export async function getMolliePayment (paymentId) {
   return mollieApiWrapper(`payments/${paymentId}`, 'GET')
 }
+
+export async function listMolliePayments (customerId) {
+  return mollieApiWrapper(`customers/${customerId}/payments`, 'GET')
+}

@@ -81,7 +81,7 @@ export async function handleRecurringPayment ({customerId, subscriptionId}) {
   const customer = await getMollieCustomer(customerId)
   const {wixSubscriberId} = JSON.parse(customer.metadata)
 
-  if (subscription.status === 'active') {
+  if (subscription && subscription.status === 'active') {
     await setSubscription(wixSubscriberId, subscriptionId)
   } else {
     await cancelSubscriptionWithSuppressAuth(wixSubscriberId)

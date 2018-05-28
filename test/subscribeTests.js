@@ -1,10 +1,12 @@
 import {db} from '../mocks/wix-data'
 import chai from 'chai'
 
-import {subscribe, unsubscribe, hasActiveSubscription} from '../Backend/subscribe'
+import {hasActiveSubscription, subscribe, unsubscribe} from '../Backend/subscribe'
 import {waitForWebhookToBeCalled} from './tunneledServer'
 import opn from 'opn'
-import {cancelMollieSubscription, getMollieCustomer} from '../Backend/mollie'
+import {cancelMollieSubscription, getMollieCustomer, listMolliePayments} from '../Backend/mollie'
+import {WixHttpFunctionRequest} from '../mocks/wix-http-functions'
+import {post_wixPaidMembershipRecurringPayment} from '../Backend/http-functions' // eslint-disable-line camelcase
 
 const userId = 'someMemberUserId'
 const email = 'someMemberEmail@email.com'
@@ -86,4 +88,48 @@ async function checkSubscriberWithMollieCustomer (subscriber, subscribeResult) {
 async function expectSubscriptionStatusToEqual (expectedStatus) {
   const subscriptionStatus = !!(await hasActiveSubscription(userId))
   chai.expect(subscriptionStatus).to.equal(expectedStatus)
+}
+
+export const recurringPaymentTestName = 'should handle recurring payment requests'
+export async function testRecurringPayment () {
+  const {paymentUrl, mollieCustomerId, paymentId} = await subscribe(userId, email)
+  console.log('accept the first payment by selecting status \'paid\' at the following URL: ' + paymentUrl)
+  opn(paymentUrl)
+  await waitForWebhookToBeCalled(paymentId)
+  const firstSubscriptionPayment = await waitForFirstSubscriptionPayment(mollieCustomerId)
+  await post_wixPaidMembershipRecurringPayment(new WixHttpFunctionRequest(firstSubscriptionPayment.id))
+
+  chai.expect(db[0].hasActiveSubscription).to.be.true // eslint-disable-line no-unused-expressions
+}
+
+export async function testFailingRecurringPayment () {
+  const {paymentUrl, mollieCustomerId, paymentId} = await subscribe(userId, email)
+  opn(paymentUrl)
+  await waitForWebhookToBeCalled(paymentId)
+  const firstSubscriptionPayment = await waitForFirstSubscriptionPayment(mollieCustomerId)
+  await cancelMollieSubscription(mollieCustomerId, firstSubscriptionPayment.subscriptionId)
+  await post_wixPaidMembershipRecurringPayment(new WixHttpFunctionRequest(firstSubscriptionPayment.id))
+
+  chai.expect(db[0].hasActiveSubscription).to.be.false // eslint-disable-line no-unused-expressions
+}
+
+async function waitForFirstSubscriptionPayment (customerId) {
+  return new Promise(async (resolve, reject) => {
+    (async function checkForSubscriptionPaymentUntilFound () {
+      try {
+        console.log('checking')
+        const {_embedded: {payments}} = await listMolliePayments(customerId)
+
+        const subscriptionPayment = payments.find(payment => payment.subscriptionId)
+
+        if (subscriptionPayment) {
+          resolve(subscriptionPayment)
+        } else {
+          await setTimeout(checkForSubscriptionPaymentUntilFound, 10000) // retry in a bit
+        }
+      } catch (e) {
+        reject(e)
+      }
+    })()
+  })
 }

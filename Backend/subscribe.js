@@ -12,7 +12,7 @@ async function createSubscriberAndMollieCustomer (userId, email) {
 export async function subscribe (userId, email) {
   const subscriber = await getSubscriberByUserId(userId) || await createSubscriberAndMollieCustomer(userId, email)
 
-  if (await hasActiveSubscription(userId)) {
+  if (subscriber && subscriber.hasActiveSubscription) {
     throw new Error(`The user with userId ${userId} is already subscribed.`)
   } else { // create first payment to create new subscription
     const payment = await createFirstMolliePayment(subscriber.mollieCustomerId)
@@ -28,6 +28,6 @@ export async function hasActiveSubscription (userId) {
 export async function unsubscribe (userId) {
   const subscriber = await getSubscriberByUserId(userId)
   if (subscriber) {
-    await cancelSubscription(userId) // database hook takes care of DELETE call to cancel Mollie subscription
+    await cancelSubscription(subscriber._id) // database hook takes care of DELETE call to cancel Mollie subscription
   }
 }
