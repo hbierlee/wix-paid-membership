@@ -30,7 +30,7 @@ export const FIRST_PAYMENT_DESCRIPTION = 'Activate your subscription'
 export const SUBSCRIPTION_DESCRIPTION = 'Your monthly subscription fee of €12.95'
 
 // page URLs
-export const PREMIUM_PAGE_ROUTER_PREFIX = 'premium' // the premium router prefix; if you change 'premium' to some other URL prefix, change the function names of `premium_router` and `premium_sitemap` accordingly!
+export const PREMIUM_PAGE_ROUTER_PREFIX = 'premium' // the premium router prefix; if you change 'premium' to some other URL prefix, change the function names of `premium_Router` and `premium_SiteMap` accordingly!
 export const PREMIUM_PAGE_KEY = 'premium-page' // the key of the page that will be shown if subscription is successful. In Wix, this key should match the name of the page in the premium router pages
 export const PREMIUM_PAGE_TITLE = 'Premium Content' // the sitemap display name of the premium content page
 
