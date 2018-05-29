@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-expressions,no-undef,import/first */
 import mock from 'mock-require'
 import {remove} from '../mocks/wix-data/'
-import {failingRecurringPaymentTestName} from './subscribeTests'
 
 mock('../Backend/mollie', '../mocks/mollie/mollie')
 mock('opn', () => { console.log('skip opn in mocked test') })
@@ -15,7 +14,7 @@ mock('./tunneledServer', {
 
 const {resetMockedMollieDb} = mock.reRequire('../mocks/mollie/mollie')
 const {post_wixPaidMembershipFirstPayment} = mock.reRequire('../Backend/http-functions') // eslint-disable-line camelcase
-const {testSubscribeAndResubscribe, subscribeAndResubscribeTestName, recurringPaymentTestName, testRecurringPayment, testFailingRecurringPayment} = mock.reRequire('./subscribeTests')
+const {testSubscribeAndResubscribe, subscribeAndResubscribeTestName, recurringPaymentTestName, testRecurringPayment, testFailingRecurringPayment, failingRecurringPaymentTestName} = mock.reRequire('./subscribeTests')
 const {WixHttpFunctionRequest} = mock.reRequire('../mocks/wix-http-functions')
 
 describe('subscriptions (unit test, with mocked mollie API)', function () {
