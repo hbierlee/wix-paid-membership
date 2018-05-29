@@ -1,4 +1,3 @@
-// For full API documentation, including code examples, visit http://wix.to/94BuAAs
 import {onUnsubscribe} from 'public/eventHandlers.js'
 import {hasActiveSubscription} from 'backend/subscribe'
 import wixUser from 'wix-users'
