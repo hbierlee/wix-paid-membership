@@ -3,7 +3,7 @@ import {PREMIUM_PAGE_KEY, PREMIUM_PAGE_ROUTER_PREFIX, PREMIUM_PAGE_TITLE, SUBSCR
 import {getSubscriberByUserId} from './database'
 
 // eslint-disable-next-line camelcase
-export async function premium_router (request) {
+export async function premium_Router (request) {
   try {
     if (await hasPremiumAccess(request.user)) {
       return ok(PREMIUM_PAGE_KEY)
@@ -28,7 +28,7 @@ async function hasPremiumAccess ({id, role}) {
 }
 
 // eslint-disable-next-line camelcase
-export async function premium_sitemap () {
+export async function premium_SiteMap (request) {
   const premiumPageSitemapEntry = new WixRouterSitemapEntry(PREMIUM_PAGE_KEY)
   premiumPageSitemapEntry.pageName = PREMIUM_PAGE_TITLE
   premiumPageSitemapEntry.url = `/${PREMIUM_PAGE_ROUTER_PREFIX}`

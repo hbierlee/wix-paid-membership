@@ -95,23 +95,23 @@ The Premium page is the page that is accessible only to paying members.
   
 1. In the Pages folder in the Wix Code Editor, click the plus symbol and select: `Add a router`  
 2. Set the URL prefix to whatever you like, like `premium`. This will be the end of the URL where your premium page resides, so: `https://www.mysite.com/premium`.  
-   - Note: if you use `premium` as URL prefix, you can skip step 4  
+   - Note: if you use `premium` as URL prefix, things get slightly trickier to configure! If you stick to `premium`, you can skip step 4  
 3. In the Pages folder, there will be a subfolder called `Premium Pages` with one page called `premium-page` (or something similar, depending on what URL prefix you chose). You can add your premium content here.
    - If you already have a premium page ready on Wix, there's no way to move it to the router sub-folder (as far as I know). However, you can select all the elements on the old page by Ctrl/cmd clicking on them, copy them by pressing Ctrl/cmd+C and paste on the new page by pressing Ctrl/cmd+C.  
-4. If you choose a different name than `premium` for your URL prefix, w need to make some small code changes. Open the `Backend/routers.js` file with the Wix Code editor. In the two lines that say:  
-   - `export  async  function premium_router(request) {`  
-   - `export  async  function premium_sitemap() {`  
-Change the word `premium` in both instances into whatever your chosen URL prefix is. If you picked `exclusive`, for instance, then `..premium_router(..` becomes `..exclusive_router(..`.  
-Finally, at the bottom of the file, delete this default template code if it's there:  
+4. If you choose a different name than `premium` for your URL prefix, we need to make two small code changes. Open the `Backend/routers.js` file with the Wix Code editor. There will be two lines that say:  
+   - `export  async  function premium_Router(request) {`  
+   - `export  async  function premium_SiteMap(request) {`  
+We need to change the `premium` part to your URL prefix. At the bottom of the page you see auto-generated example code of that's very similar, except it has the correct URL prefix (in this case, `XXXXX`):
       ```  
-      export  function exclusive_Router(request) {  
+      export  function XXXXX_Router(request) {  
          //Add your code for this event here:  
       }  
   
-      export  function exclusive_SiteMap(request) {  
+      export  function XXXXX_SiteMap(request) {  
          //Add your code for this event here:  
       }  
       ```  
+Change the lines with `premium_Router` and `premium_SiteMap` so that they look like the auto-generated example code. Then remove the auto-generated example code.
   
 #### Add links to your Premium page  
 Of course, we want people to reach our Premium page. Since these pages are subpages of a router, Wix doesn't allow us to use the Page link option. Instead, use the Web address option and write the full URL of the Premium page, which is your site's URL followed by the URL prefix. For example: `https://www.mysite.com/premium`.  
