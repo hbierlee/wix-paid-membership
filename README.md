@@ -1,4 +1,7 @@
 # Paid Membership with Wix Code  
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/mollie/wix-paid-membership.svg)](https://greenkeeper.io/)
+
 This is an example project and tutorial on how to add Paid Membership to your Wix site with Wix Code. Paid Membership means that a portion of your site is accessible only to members who pay a regular fee.  
 - [Demo](https://bierleehenk.wixsite.com/paid-membership-demo)  
 - [Feature thread on the Wix Code forum](https://www.wix.com/code/home/forum/show-off-your-work/paid-membership-2)  
