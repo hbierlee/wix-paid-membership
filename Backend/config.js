@@ -17,8 +17,8 @@ export const SITE_API_URL = `${SITE_URL}/_functions`
 export const SUBSCRIBERS_COLLECTION_NAME = 'Subscribers' // the name of database collection that stores your subscribers; If you change this, change the function names of the hooks in Backend/data.js as well!
 
 // Mollie API keys (!!! KEEP THESE SECRET, IF YOU MAKE YOUR CODE PUBLIC, REMOVE THESE KEYS !!!)
-const MOLLIE_TEST_API_KEY = 'test_xDBcNmGEcf9dfHxjCw9TtbjPj554cb'
-const MOLLIE_LIVE_API_KEY = '..' // TODO
+const MOLLIE_TEST_API_KEY = 'test_xxxx'
+const MOLLIE_LIVE_API_KEY = 'live_yyyy'
 export const MOLLIE_API_KEY = IS_PRODUCTION ? MOLLIE_LIVE_API_KEY : MOLLIE_TEST_API_KEY
 
 // payment/subscription settings
