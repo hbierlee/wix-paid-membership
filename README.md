@@ -10,7 +10,8 @@ For funding, I approached Mollie and signed a partnership. I receive a percentag
   
 ## Features  
 - A single subscription package option which can be any amount, for any period (monthly, every 2 days, whatever you'd like)  
-   - It is also possible to require a one-time activation cost of the subscription  
+   - It is also possible to require a one-time activation cost of the subscription
+   - After activating the subscription, the customer will be automatically charged via (SEPA) direct debit or creditcard. Please note that this might take a few days. During this period, the user already has access to the premium content. In this aspect, it's a 'good faith system'.   
 - Support for the following payment methods: [https://www.mollie.com/en/payments/](https://www.mollie.com/en/payments/)  
    - Note: PayPal is not supported by Mollie for these type of recurring payments  
 - A single premium page that is only accessible to subscribers. Non-subscribers are redirected to the subscribe page.  
