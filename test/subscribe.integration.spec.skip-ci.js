@@ -10,6 +10,8 @@ import {
 import {remove} from 'wix-data'
 import {createTunneledServer} from './tunneledServer'
 
+const TIMEOUT = 1800
+
 describe('subscriptions (integration test, with Mollie test API)', function () {
   afterEach(function () {
     remove() // clear db
@@ -20,7 +22,7 @@ describe('subscriptions (integration test, with Mollie test API)', function () {
   })
 
   it(subscribeAndResubscribeTestName, async function () {
-    this.timeout(0)
+    this.timeout(TIMEOUT)
     await testSubscribeAndResubscribe()
   })
 
@@ -28,12 +30,12 @@ describe('subscriptions (integration test, with Mollie test API)', function () {
      * This test case might take 5-15 minutes
      */
   it(recurringPaymentTestName, async function () {
-    this.timeout(0)
+    this.timeout(TIMEOUT)
     await testRecurringPayment()
   })
 
   it(failingRecurringPaymentTestName, async function () {
-    this.timeout(0)
+    this.timeout(TIMEOUT)
     await testFailingRecurringPayment()
   })
 })
