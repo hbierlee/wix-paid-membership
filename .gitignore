@@ -1,3 +1,4 @@
 node_modules
 scratch.js
 .idea
+.env
