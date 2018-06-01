@@ -74,14 +74,14 @@ async function handleFirstPayment (payment) {
 }
 
 // TODO fix the unit test so that this handler doesn't have to be exported
-export async function handleRecurringPayment ({customerId, subscriptionId}) {
+export async function handleRecurringPayment ({customerId, subscriptionId, status}) {
   const subscription = await getMollieSubscription(customerId, subscriptionId)
 
   // TODO [mollie] or is it better to check for payment !== 'paid' instead of subscription status?
   const customer = await getMollieCustomer(customerId)
   const {wixSubscriberId} = JSON.parse(customer.metadata)
 
-  if (!subscription || subscription.status !== 'active') {
+  if (!subscription || subscription.status !== 'active' || status !== 'paid') {
     await cancelSubscriptionWithSuppressAuth(wixSubscriberId)
   }
 }
