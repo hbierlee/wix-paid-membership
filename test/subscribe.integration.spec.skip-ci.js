@@ -10,7 +10,7 @@ import {
 import {remove} from 'wix-data'
 import {createTunneledServer} from './tunneledServer'
 
-const TIMEOUT = 1800
+const TIMEOUT = 1800000
 
 describe('subscriptions (integration test, with Mollie test API)', function () {
   afterEach(function () {
