@@ -33,9 +33,4 @@ describe('subscriptions (integration test, with Mollie test API)', function () {
     this.timeout(TIMEOUT)
     await testRecurringPayment()
   })
-
-  it(failingRecurringPaymentTestName, async function () {
-    this.timeout(TIMEOUT)
-    await testFailingRecurringPayment()
-  })
 })

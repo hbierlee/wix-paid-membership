@@ -1,12 +1,16 @@
-import {db} from '../mocks/wix-data'
+import { db } from '../mocks/wix-data'
 import chai from 'chai'
 
-import {hasActiveSubscription, subscribe, unsubscribe} from '../Backend/subscribe'
-import {waitForWebhookToBeCalled} from './tunneledServer'
+import { hasActiveSubscription, subscribe, unsubscribe } from '../Backend/subscribe'
+import { waitForWebhookToBeCalled } from './tunneledServer'
 import opn from 'opn'
-import {cancelMollieSubscription, getMollieCustomer, listMolliePayments} from '../Backend/mollie'
-import {WixHttpFunctionRequest} from '../mocks/wix-http-functions'
-import {post_wixPaidMembershipRecurringPayment} from '../Backend/http-functions' // eslint-disable-line camelcase
+import {
+  cancelMollieSubscription,
+  getMollieCustomer,
+  getMollieSubscription,
+  listMolliePayments,
+  mockUserInteraction
+} from '../Backend/mollie'
 
 const userId = 'someMemberUserId'
 const email = 'someMemberEmail@email.com'
@@ -29,9 +33,13 @@ export async function testSubscribeAndResubscribe () {
   await checkSubscriberWithMollieCustomer(db[0], secondSubscribeResult)
   chai.expect(secondSubscribeResult.mollieCustomerId).to.equal(firstSubscribeResult.mollieCustomerId)
 
-  console.log('accept the first payment by selecting status \'paid\' at the following URL: ' + firstSubscribeResult.paymentUrl)
-  opn(firstSubscribeResult.paymentUrl)
-  await waitForWebhookToBeCalled(firstSubscribeResult.paymentId)
+  if (process.env.MOLLIE_IS_MOCKED) {
+    await mockUserInteraction(firstSubscribeResult.paymentId, 'paid')
+  } else {
+    console.log('accept the first payment by selecting status \'paid\' at the following URL: ' + firstSubscribeResult.paymentUrl)
+    opn(firstSubscribeResult.paymentUrl)
+    await waitForWebhookToBeCalled(firstSubscribeResult.paymentId)
+  }
 
   const firstSubscriptionId = db[0].mollieSubscriptionId
   chai.expect(firstSubscriptionId).to.be.a('string')
@@ -58,9 +66,13 @@ export async function testSubscribeAndResubscribe () {
   chai.expect(db[0].mollieSubscriptionId).to.equal(firstSubscriptionId) // expect this to not be updated yet
   await expectSubscriptionStatusToEqual(false)
 
-  console.log('resubscribe case: accept the first payment by selecting status \'paid\' at the following URL: ' + resubscribeResult.paymentUrl)
-  opn(resubscribeResult.paymentUrl)
-  await waitForWebhookToBeCalled(resubscribeResult.paymentId)
+  if (process.env.MOLLIE_IS_MOCKED) {
+    await mockUserInteraction(resubscribeResult.paymentId, 'paid')
+  } else {
+    console.log('resubscribe case: accept the first payment by selecting status \'paid\' at the following URL: ' + resubscribeResult.paymentUrl)
+    opn(resubscribeResult.paymentUrl)
+    await waitForWebhookToBeCalled(resubscribeResult.paymentId)
+  }
   await expectSubscriptionStatusToEqual(true)
   chai.expect(db[0].mollieSubscriptionId).to.be.an('string')
   chai.expect(db[0].mollieSubscriptionId).to.not.equal(firstSubscriptionId) // expect this to be updated
@@ -93,24 +105,31 @@ async function expectSubscriptionStatusToEqual (expectedStatus) {
 export const recurringPaymentTestName = 'should handle recurring payment requests'
 export async function testRecurringPayment () {
   const {paymentUrl, mollieCustomerId, paymentId} = await subscribe(userId, email)
-  console.log('accept the first payment by selecting status \'paid\' at the following URL: ' + paymentUrl)
-  opn(paymentUrl)
-  await waitForWebhookToBeCalled(paymentId)
-  const firstSubscriptionPayment = await waitForFirstSubscriptionPayment(mollieCustomerId)
-  await post_wixPaidMembershipRecurringPayment(new WixHttpFunctionRequest(firstSubscriptionPayment.id))
+
+  if (process.env.MOLLIE_IS_MOCKED) {
+    await mockUserInteraction(paymentId, 'paid')
+  } else {
+    console.log('accept the first payment by selecting status \'paid\' at the following URL: ' + paymentUrl)
+    opn(paymentUrl)
+    await waitForWebhookToBeCalled(paymentId)
+    await waitForFirstSubscriptionPayment(mollieCustomerId)
+  }
 
   chai.expect(db[0].hasActiveSubscription).to.be.true // eslint-disable-line no-unused-expressions
 }
 
-export const failingRecurringPaymentTestName = 'should unsubscribe user if subscription is not active when a recurring payment arrives'
+export const failingRecurringPaymentTestName = 'should unsubscribe user if recurring payment fails'
 export async function testFailingRecurringPayment () {
-  const {paymentUrl, mollieCustomerId, paymentId} = await subscribe(userId, email)
-  opn(paymentUrl)
-  await waitForWebhookToBeCalled(paymentId)
-  const firstSubscriptionPayment = await waitForFirstSubscriptionPayment(mollieCustomerId)
-  await cancelMollieSubscription(mollieCustomerId, firstSubscriptionPayment.subscriptionId)
-  await post_wixPaidMembershipRecurringPayment(new WixHttpFunctionRequest(firstSubscriptionPayment.id))
+  const {mollieCustomerId, paymentId} = await subscribe(userId, email)
 
+  await mockUserInteraction(paymentId, 'paid')
+
+  const subscriptionPayment = await waitForFirstSubscriptionPayment(mollieCustomerId)
+  await mockUserInteraction(subscriptionPayment.id, 'failed')
+
+  const subscription = await getMollieSubscription(mollieCustomerId, subscriptionPayment.subscriptionId)
+
+  chai.expect(subscription.status).to.equal('canceled') // eslint-disable-line no-unused-expressions
   chai.expect(db[0].hasActiveSubscription).to.be.false // eslint-disable-line no-unused-expressions
 }
 

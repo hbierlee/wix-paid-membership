@@ -1,3 +1,6 @@
+// eslint-disable-next-line camelcase
+import { callWebhook } from '../../test/tunneledServer'
+
 const customers = []
 const payments = []
 const subscriptions = []
@@ -30,9 +33,28 @@ export async function getMollieCustomer (customerId) {
 
 export async function createFirstMolliePayment (customerId) {
   console.log('mock createFirstMolliePayment')
-  const payment = {customerId, id: `payment_${paymentIdCounter++}`, _links: {checkout: {href: 'checkout_href'}}, status: 'paid'}
+  const payment = {
+    customerId,
+    id: `payment_${paymentIdCounter++}`,
+    _links: {checkout: {href: 'checkout_href'}},
+    status: 'pending',
+    sequenceType: 'first'
+  }
   payments.push(payment)
+
   return payment
+}
+
+export async function mockUserInteraction (paymentId, status) {
+  console.log('mockUserInteraction', paymentId, '->', status)
+  const payment = await getMolliePayment(paymentId)
+  payment.status = status
+
+  if (payment.sequenceType === 'recurring' && payment.status !== 'paid') {
+    await cancelMollieSubscription(payment.customerId, payment.subscriptionId)
+  }
+
+  return callWebhook(payment.sequenceType, payment.id)
 }
 
 export async function getMollieMandates (customerId) {
@@ -46,7 +68,14 @@ export async function createMollieSubscription (customerId) {
   const subscription = {customerId, status: 'active', id: subscriptionId}
   subscriptions.push(subscription)
 
-  const subscriptionPayment = {customerId, id: `payment_${paymentIdCounter++}`, _links: {checkout: {href: 'checkout_href'}}, status: 'paid', subscriptionId}
+  const subscriptionPayment = {
+    customerId,
+    id: `payment_${paymentIdCounter++}`,
+    _links: {checkout: {href: 'checkout_href'}},
+    status: 'pending',
+    sequenceType: 'recurring',
+    subscriptionId
+  }
   payments.push(subscriptionPayment)
 
   return subscription
