@@ -29,7 +29,7 @@ function startServer (port = DEFAULT_PORT) {
 
   app.post(`/wixPaidMembershipFirstPayment`, async function (req, res) {
     try {
-      await post_wixPaidMembershipFirstPayment(new WixHttpFunctionRequest(req.body.id))
+      await callWebhook('first', req.body.id)
       resolveWebhook()
       res.sendStatus(200)
     } catch (e) {
@@ -41,7 +41,7 @@ function startServer (port = DEFAULT_PORT) {
 
   app.post(`/wixPaidMembershipRecurringPayment`, async function (req, res) {
     try {
-      await post_wixPaidMembershipRecurringPayment(new WixHttpFunctionRequest(req.body.id))
+      await callWebhook('recurring', req.body.id)
       resolveWebhook()
       res.sendStatus(200)
     } catch (e) {
@@ -67,4 +67,14 @@ export async function createTunneledServer (port = DEFAULT_PORT) {
   TUNNELED_SERVER_URL = await ngrok.connect(port)
   config['SITE_API_URL'] = TUNNELED_SERVER_URL
   return TUNNELED_SERVER_URL
+}
+
+export async function callWebhook (webhookName, paymentId) {
+  const request = new WixHttpFunctionRequest(paymentId)
+  switch (webhookName) {
+    case 'first':
+      return post_wixPaidMembershipFirstPayment(request)
+    case 'recurring':
+      return post_wixPaidMembershipRecurringPayment(request)
+  }
 }
