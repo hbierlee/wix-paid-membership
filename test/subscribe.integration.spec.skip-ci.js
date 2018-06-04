@@ -1,9 +1,7 @@
 /* eslint-disable no-undef,camelcase */
 import {
-  failingRecurringPaymentTestName,
   recurringPaymentTestName,
   subscribeAndResubscribeTestName,
-  testFailingRecurringPayment,
   testRecurringPayment,
   testSubscribeAndResubscribe
 } from './subscribeTests'
