@@ -1,0 +1,13 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "mocks/wix-data/package.json",
+        "mocks/wix-fetch/package.json",
+        "mocks/wix-http-functions/package.json",
+        "mocks/wix-router/package.json",
+        "package.json"
+      ]
+    }
+  }
+}
