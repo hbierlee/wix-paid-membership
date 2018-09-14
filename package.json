@@ -27,6 +27,7 @@
     "wix-router": "file:./mocks/wix-router"
   },
   "dependencies": {
+    "cryptiles": "^4.1.2",
     "node-fetch": "^2.1.1"
   }
 }
