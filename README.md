@@ -1,8 +1,11 @@
 # Paid Membership with Wix Code  
-This is an example project and tutorial on how to add Paid Membership to your Wix site with Wix Code. Paid Membership means that a portion of your site is accessible only to members who pay a regular fee.  
+This is an example project and tutorial on how to add Paid Membership to your Wix site with Wix Code. Paid Membership means that a portion of your site is accessible only to members who pay a recurring fee.  
 - [Demo](https://bierleehenk.wixsite.com/paid-membership-demo)  
 - [Feature thread on the Wix Code forum](https://www.wix.com/code/home/forum/show-off-your-work/paid-membership-2)  
   
+# IMPORTANT UPDATE: Official solution by Wix is now available in the app market
+Wix has released an official solution for this problem, a Wix app called [Paid Plans](https://www.wix.com/app-market/paid-plans/overview). Since it is much better in terms of installation, usability and features, I can only recommend using that one over my project. I'm leaving my project up for educational purposes (or if anyone does not want to use the official solution for some reason).
+
 ## Motivation  
 In my view, [Wix](https://www.wix.com) provides a smooth CMS experience, but I quickly discovered that Paid Membership was lacking official support and that the Wix community had been requesting this feature for a long time. Fortunately, the Wix Code scripting suite was powerful enough to develop it myself by integrating the payment service provider [Mollie](http://mollie.com/). I am making the project available to the rest of the Wix community.  
   
@@ -19,14 +22,14 @@ For funding, I approached Mollie and signed a partnership. I receive a percentag
 - Your clients can review their subscription status and unsubscribe themselves  
 - The user interface is in your hands entirely (so it doesn't have to look like my demo site at all, fortunately)  
   
-Are there some functionality missing that is preventing you from adding this project to your site? Let's open the discussion on the [Wix Code forum thread](https://www.wix.com/code/home/forum/show-off-your-work/paid-membership-2) or on [a GitHub feature request](https://github.com/mollie/wix-paid-membership/issues/new). If there's enough traction, I might add it to the project!  
+Are there some functionality missing that is preventing you from adding this project to your site? Let's open the discussion on the [Wix Code forum thread](https://www.wix.com/code/home/forum/show-off-your-work/paid-membership-2) or on [a GitHub feature request](https://github.com/hbierlee/wix-paid-membership/issues/new). If there's enough traction, I might add it to the project!  
   
 ## Implementation, updates, support and feedback  
 Unfortunately, installing this feature on your site is not a plug-and-play affair like any ordinary Wix App. This is why I wrote a tutorial that outlines the process step by step: if you carefully follow the tutorial without rush, it shouldn't take longer than 30-45 minutes, depending on your experience with Wix and Wix Code.  
   
 Another side-effect is that software updates to the project are not automatically installed. [Subscribe to my mailing list](http://eepurl.com/du7r9L) to keep track of project updates, such as new features or bug fixes. These will have to be installed manually again.  
   
-Feedback on this tutorial is highly appreciated, so that I can keep improving it for everyone. If you get stuck, it means something is not clear. In that case, please open a [support ticket](https://github.com/mollie/wix-paid-membership/issues/new).  
+Feedback on this tutorial is highly appreciated, so that I can keep improving it for everyone. If you get stuck, it means something is not clear. In that case, please open a [support ticket](https://github.com/hbierlee/wix-paid-membership/issues/new).  
   
 For a fee, I can also take care of the whole installation for you. Contact me at bierlee.henk+wix@gmail.com.  
   
